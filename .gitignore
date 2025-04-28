@@ -1,0 +1,23 @@
+# Ignore Visual Studio files
+.vs/
+*.user
+*.suo
+*.cache
+*.log
+
+# Ignore bin and obj folders
+bin/
+obj/
+
+# Ignore build artifacts
+*.dll
+*.exe
+*.pdb
+
+# Ignore database artifacts
+*.mdf
+*.ldf
+
+# Ignore configuration artifacts
+*.userosscache
+*.sln.docstates
