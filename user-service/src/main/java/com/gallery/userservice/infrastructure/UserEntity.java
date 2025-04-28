@@ -4,7 +4,7 @@ import com.gallery.userservice.domain.User;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class UserEntity {
 
     @Id
