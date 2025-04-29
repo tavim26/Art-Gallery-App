@@ -1,8 +1,9 @@
 ﻿using ArtworkService.Domain;
 using ArtworkService.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
+using System.Linq;
 
 namespace ArtworkService.Controllers
 {
@@ -10,11 +11,13 @@ namespace ArtworkService.Controllers
     [ApiController]
     public class ArtworksController : ControllerBase
     {
-        private ArtworksService _artworksService;
+        private readonly ArtworksService _artworksService;
+        private readonly ArtworkImagesService _artworkImagesService;
 
-        public ArtworksController(ArtworksService artworksService)
+        public ArtworksController(ArtworksService artworksService, ArtworkImagesService artworkImagesService)
         {
-            this._artworksService = artworksService;
+            _artworksService = artworksService;
+            _artworkImagesService = artworkImagesService;
         }
 
         [HttpGet]
@@ -30,13 +33,6 @@ namespace ArtworkService.Controllers
             if (artwork == null)
                 return NotFound();
             return artwork;
-        }
-
-        [HttpGet("Images/{artworkId:int}")]
-        public ActionResult<IEnumerable<ArtworkImage>> GetArtworkImages(int artworkId)
-        {
-            var images = _artworksService.GetArtworkImages(artworkId);
-            return images;
         }
 
         [HttpPost]
@@ -66,7 +62,6 @@ namespace ArtworkService.Controllers
             return BadRequest();
         }
 
-
         [HttpGet("searchByTitle")]
         public ActionResult<IEnumerable<Artwork>> SearchByTitle([FromQuery] string title)
         {
@@ -84,9 +79,6 @@ namespace ArtworkService.Controllers
         {
             return _artworksService.FilterByMaxPrice(maxPrice);
         }
-
-        //export
-
 
         [HttpGet("export/csv")]
         public IActionResult ExportArtworksCsv()
@@ -110,6 +102,17 @@ namespace ArtworkService.Controllers
             var json = JsonSerializer.Serialize(artworks);
 
             return File(Encoding.UTF8.GetBytes(json), "application/json", "artworks.json");
+        }
+
+        [HttpGet("images/{artworkId:int}")]
+        public ActionResult<List<string>> GetArtworkImages(int artworkId)
+        {
+            var images = _artworkImagesService.GetArtworkImages(artworkId);
+            if (images == null || images.Count == 0)
+                return NotFound();
+
+            var urls = images.Select(img => img.ImageUrl).ToList();
+            return Ok(urls);
         }
     }
 }

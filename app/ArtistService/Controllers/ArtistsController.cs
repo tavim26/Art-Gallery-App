@@ -63,5 +63,18 @@ namespace ArtistService.Controllers
         {
             return _artistsService.SearchArtistsByName(name);
         }
+
+
+
+        [HttpGet("photo/{id:int}")]
+        public ActionResult<string> GetArtistPhoto(int id)
+        {
+            var artist = _artistsService.GetArtist(id);
+            if (artist == null)
+                return NotFound();
+
+            return Ok(artist.Photo);
+        }
+
     }
 }

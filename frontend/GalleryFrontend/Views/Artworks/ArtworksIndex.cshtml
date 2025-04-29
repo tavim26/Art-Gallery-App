@@ -1,0 +1,41 @@
+﻿@model List<GalleryFrontend.Models.ArtworkModel>
+
+@{
+	ViewData["Title"] = "Artworks List";
+}
+
+<h1 class="text-center">Artworks</h1>
+
+<table class="table table-striped">
+	<thead>
+	<tr>
+		<th>Id</th>
+		<th>Title</th>
+		<th>Year Created</th>
+		<th>Type</th>
+		<th>Artist Name</th> 
+		<th>Price</th>
+		<th>Actions</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var artwork in Model)
+	{
+		<tr>
+			<td>@artwork.Id</td>
+			<td>@artwork.Title</td>
+			<td>@artwork.YearCreated</td>
+			<td>@artwork.Type</td>
+			<td>@artwork.ArtistName</td> 
+			<td>@artwork.Price.ToString("F2") $</td>
+			
+			<td>
+				<a class="btn btn-info btn-sm" href="/artworks/viewimages?artworkId=@artwork.Id">View Images</a>
+			</td>
+
+		</tr>
+	}
+	</tbody>
+</table>
+
+<a class="btn btn-secondary" href="/">Back to Home</a>

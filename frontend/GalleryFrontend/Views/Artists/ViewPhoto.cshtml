@@ -1,0 +1,13 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "Artist Photo";
+}
+
+<h1 class="text-center">Artist Photo</h1>
+
+<div class="text-center mt-4">
+    <img src="@Model" alt="Artist Photo" class="img-fluid" style="max-height:400px;" />
+</div>
+
+<a class="btn btn-secondary mt-4" href="/artists">Back to Artists</a>

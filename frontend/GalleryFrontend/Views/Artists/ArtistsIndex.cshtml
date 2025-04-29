@@ -1,0 +1,39 @@
+﻿@model List<GalleryFrontend.Models.ArtistModel>
+
+@{
+	ViewData["Title"] = "Artists List";
+}
+
+<h1 class="text-center">Artists</h1>
+
+<table class="table table-striped">
+	<thead>
+	<tr>
+		<th>Id</th>
+		<th>Name</th>
+		<th>Birthplace</th>
+		<th>Nationality</th>
+		<th>Birth Date</th>
+		<th>Actions</th>
+	</tr>
+	</thead>
+	<tbody>
+	@foreach (var artist in Model)
+	{
+		<tr>
+			<td>@artist.Id</td>
+			<td>@artist.Name</td>
+			<td>@artist.Birthplace</td>
+			<td>@artist.Nationality</td>
+			<td>@(artist.BirthDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+			
+			<td>
+				<a class="btn btn-info btn-sm" href="/artists/viewphoto?id=@artist.Id">View Photo</a>
+			</td>
+
+		</tr>
+	}
+	</tbody>
+</table>
+
+<a class="btn btn-secondary" href="/">Back to Home</a>

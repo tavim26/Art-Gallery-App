@@ -11,10 +11,23 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6001
+          "Port": 5237
         }
       ]
     },
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artworks/images/{artworkId}",
+      "DownstreamPathTemplate": "/api/artworks/images/{artworkId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5237
+        }
+      ]
+    },
+
     {
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "UpstreamPathTemplate": "/artists/{everything}",
@@ -27,6 +40,19 @@
         }
       ]
     },
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artists/photo/{id}",
+      "DownstreamPathTemplate": "/api/artists/photo/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 6002
+        }
+      ]
+    },
+
     {
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "UpstreamPathTemplate": "/users/{everything}",
