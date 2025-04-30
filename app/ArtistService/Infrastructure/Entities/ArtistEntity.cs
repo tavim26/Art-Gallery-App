@@ -44,7 +44,7 @@ namespace ArtistService.Infrastructure.Entities
 
         public ArtistEntity(Artist artist)
         {
-            Id = artist.Id.ArtistId;
+            Id = artist.Id;
             Name = artist.Name;
             BirthDate = artist.BirthDate;
             Birthplace = artist.Birthplace;

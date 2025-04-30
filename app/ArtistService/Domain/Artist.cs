@@ -4,7 +4,7 @@ namespace ArtistService.Domain
 {
     public class Artist
     {
-        private ArtistID _id;
+        private int _id;
         private string _name;
         private DateTime? _birthDate;
         private string _birthplace;
@@ -13,7 +13,7 @@ namespace ArtistService.Domain
 
         public Artist()
         {
-            this._id = new ArtistID();
+            this._id = 0;
             this._name = "";
             this._birthDate = null;
             this._birthplace = "";
@@ -21,7 +21,7 @@ namespace ArtistService.Domain
             this._photo = "";
         }
 
-        public Artist(ArtistID id, string? name, DateTime? birthDate, string? birthplace, string? nationality, string? photo)
+        public Artist(int id, string? name, DateTime? birthDate, string? birthplace, string? nationality, string? photo)
         {
             this._id = id;
             this._name = name ?? "";
@@ -31,19 +31,11 @@ namespace ArtistService.Domain
             this._photo = photo ?? "";
         }
 
-        public Artist(int artistId, string? name, DateTime? birthDate, string? birthplace, string? nationality, string? photo)
-        {
-            this._id = new ArtistID(artistId);
-            this._name = name ?? "";
-            this._birthDate = birthDate;
-            this._birthplace = birthplace ?? "";
-            this._nationality = nationality ?? "";
-            this._photo = photo ?? "";
-        }
+       
 
         public Artist(Artist artist)
         {
-            this._id = new ArtistID(artist._id);
+            this._id = artist._id;
             this._name = artist._name;
             this._birthDate = artist._birthDate;
             this._birthplace = artist._birthplace;
@@ -51,7 +43,8 @@ namespace ArtistService.Domain
             this._photo = artist._photo;
         }
 
-        public ArtistID Id
+
+        public int Id
         {
             get { return this._id; }
             set { this._id = value; }

@@ -15,18 +15,18 @@ namespace GalleryFrontend.Controllers
             _httpClient.BaseAddress = new Uri("http://localhost:7000/");
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string name = null)
         {
-            var response = await _httpClient.GetAsync("artists/");
+            string url = string.IsNullOrEmpty(name) ? "artists/" : $"artists/searchByName?name={Uri.EscapeDataString(name)}";
+            var response = await _httpClient.GetAsync(url);
             var json = await response.Content.ReadAsStringAsync();
             var artists = JsonSerializer.Deserialize<List<ArtistModel>>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
 
-            return View("ArtistsIndex");
+            return View(artists);
         }
-
 
         public async Task<IActionResult> ViewPhoto(int id)
         {
@@ -39,6 +39,5 @@ namespace GalleryFrontend.Controllers
 
             return View(model: photoUrl);
         }
-
     }
 }

@@ -46,7 +46,7 @@ namespace ArtworkService.Infrastructure.Entities
 
         public ArtworkEntity(Artwork artwork)
         {
-            Id = artwork.Id.ArtworkId;
+            Id = artwork.Id;
             Title = artwork.Title;
             YearCreated = artwork.YearCreated;
             Type = artwork.Type;

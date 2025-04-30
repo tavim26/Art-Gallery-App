@@ -67,6 +67,13 @@ namespace ArtworkService.Services
             return _artworkDAO.FilterByType(type);
         }
 
+        public List<Artwork> FilterByArtistId(int artistId)
+        {
+            if (artistId <= 0)
+                return new List<Artwork>();
+            return _artworkDAO.FilterByArtistId(artistId);
+        }
+
         public List<Artwork> FilterByMaxPrice(double maxPrice)
         {
             if (maxPrice < 0)

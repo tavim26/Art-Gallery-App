@@ -11,6 +11,7 @@
 
         List<Artwork> SearchByTitle(string title);
         List<Artwork> FilterByType(string type);
+        List<Artwork> FilterByArtistId(int artistId);
         List<Artwork> FilterByMaxPrice(double maxPrice);
     }
 }

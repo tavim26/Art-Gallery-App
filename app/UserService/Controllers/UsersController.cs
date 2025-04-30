@@ -74,7 +74,7 @@ namespace UserService.Controllers
 
             foreach (var user in users)
             {
-                builder.AppendLine($"{user.Id.Id},{user.Name},{user.Role},{user.Phone}");
+                builder.AppendLine($"{user.Id},{user.Name},{user.Role},{user.Phone}");
             }
 
             return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "users.csv");

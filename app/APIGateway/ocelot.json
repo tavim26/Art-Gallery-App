@@ -11,7 +11,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5237
+          "Port": 5266
         }
       ]
     },
@@ -23,7 +23,57 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5237
+          "Port": 5266
+        }
+      ]
+    },
+
+
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artworks/searchByTitle",
+      "DownstreamPathTemplate": "/api/Artworks/searchByTitle",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5266
+        }
+      ]
+    },
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artworks/filterByType",
+      "DownstreamPathTemplate": "/api/Artworks/filterByType",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5266
+        }
+      ]
+    },
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artworks/filterByArtistId",
+      "DownstreamPathTemplate": "/api/Artworks/filterByArtistId",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5266
+        }
+      ]
+    },
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artworks/filterByMaxPrice",
+      "DownstreamPathTemplate": "/api/Artworks/filterByMaxPrice",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5266
         }
       ]
     },
@@ -61,7 +111,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6003
+          "Port": 5128
         }
       ]
     },
@@ -73,7 +123,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6003
+          "Port": 5128
         }
       ]
     },
@@ -85,7 +135,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6003
+          "Port": 5128
         }
       ]
     },
@@ -97,7 +147,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6004
+          "Port": 5045
         }
       ]
     }

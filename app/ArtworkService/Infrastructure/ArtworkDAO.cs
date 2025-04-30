@@ -161,6 +161,32 @@ namespace ArtworkService.Infrastructure
             }
         }
 
+
+        public List<Artwork> FilterByArtistId(int artistId)
+        {
+            try
+            {
+                List<Artwork> artworks = new List<Artwork>();
+                if (_artworksSet != null)
+                {
+                    var query = _artworksSet
+                        .Where(a => a.ArtistId == artistId)
+                        .OrderBy(a => a.YearCreated);
+
+                    foreach (var artworkEntity in query)
+                        artworks.Add(artworkEntity.ToArtwork());
+                }
+                return artworks;
+            }
+            catch
+            {
+                return new List<Artwork>();
+            }
+        }
+
+
+
+
         public List<Artwork> FilterByMaxPrice(double maxPrice)
         {
             try

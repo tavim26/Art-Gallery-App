@@ -39,7 +39,7 @@ namespace SaleService.Infrastructure.Entities
 
         public SaleEntity(Sale sale)
         {
-            Id = sale.Id.Id;
+            Id = sale.Id;
             ArtworkId = sale.ArtworkId;
             EmployeeId = sale.EmployeeId;
             SaleDate = sale.SaleDate;

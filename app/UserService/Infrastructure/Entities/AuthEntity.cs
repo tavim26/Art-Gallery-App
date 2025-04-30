@@ -36,7 +36,7 @@ namespace UserService.Infrastructure.Entities
 
         public AuthEntity(Auth auth)
         {
-            Id = auth.Id.Id;
+            Id = auth.Id;
             UserId = auth.UserId;
             Email = auth.Email;
             PasswordHash = auth.PasswordHash;

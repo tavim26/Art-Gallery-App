@@ -74,6 +74,13 @@ namespace ArtworkService.Controllers
             return _artworksService.FilterByType(type);
         }
 
+
+        [HttpGet("filterByArtistId")]
+        public ActionResult<IEnumerable<Artwork>> FilterByArtistId([FromQuery] int artistId)
+        {
+            return _artworksService.FilterByArtistId(artistId);
+        }
+
         [HttpGet("filterByMaxPrice")]
         public ActionResult<IEnumerable<Artwork>> FilterByMaxPrice([FromQuery] double maxPrice)
         {
@@ -89,7 +96,7 @@ namespace ArtworkService.Controllers
 
             foreach (var artwork in artworks)
             {
-                builder.AppendLine($"{artwork.Id.ArtworkId},{artwork.Title},{artwork.YearCreated},{artwork.Type},{artwork.ArtistId},{artwork.Price}");
+                builder.AppendLine($"{artwork.Id},{artwork.Title},{artwork.YearCreated},{artwork.Type},{artwork.ArtistId},{artwork.Price}");
             }
 
             return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "artworks.csv");

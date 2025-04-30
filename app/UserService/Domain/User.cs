@@ -2,20 +2,20 @@
 {
     public class User
     {
-        private UserID _id;
+        private int _id;
         private string _name;
         private string _role;
         private string _phone;
 
         public User()
         {
-            this._id = new UserID();
+            this._id = 0;
             this._name = "";
             this._role = "";
             this._phone = "";
         }
 
-        public User(UserID id, string? name, string? role, string? phone)
+        public User(int id, string? name, string? role, string? phone)
         {
             this._id = id;
             this._name = name ?? "";
@@ -23,23 +23,16 @@
             this._phone = phone ?? "";
         }
 
-        public User(int userId, string? name, string? role, string? phone)
-        {
-            this._id = new UserID(userId);
-            this._name = name ?? "";
-            this._role = role ?? "";
-            this._phone = phone ?? "";
-        }
 
         public User(User user)
         {
-            this._id = new UserID(user._id);
+            this._id = user._id;
             this._name = user._name;
             this._role = user._role;
             this._phone = user._phone;
         }
 
-        public UserID Id
+        public int Id
         {
             get { return this._id; }
             set { this._id = value; }

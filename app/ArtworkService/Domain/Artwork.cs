@@ -2,7 +2,7 @@
 {
     public class Artwork
     {
-        private ArtworkID _id;
+        private int _id;
         private string _title;
         private int _yearCreated;
         private string _type;
@@ -12,7 +12,7 @@
 
         public Artwork()
         {
-            this._id = new ArtworkID();
+            this._id = 0;
             this._title = "";
             this._yearCreated = 0;
             this._type = "";
@@ -20,7 +20,7 @@
             this._price = 0.0;
         }
 
-        public Artwork(ArtworkID id, string? title, int yearCreated, string? type, int artistId,double price)
+        public Artwork(int id, string? title, int yearCreated, string? type, int artistId,double price)
         {
             this._id = id;
             this._title = title != null ? title : "";
@@ -30,19 +30,11 @@
             this._price = price;
         }
 
-        public Artwork(int artworkId, string? title, int yearCreated, string? type, int artistId,double price)
-        {
-            this._id = new ArtworkID(artworkId);
-            this._title = title != null ? title : "";
-            this._yearCreated = yearCreated;
-            this._type = type != null ? type : "";
-            this._artistId = artistId;
-            this._price = price;
-        }
+      
 
         public Artwork(Artwork artwork)
         {
-            this._id = new ArtworkID(artwork._id);
+            this._id =  artwork._id;
             this._title = artwork._title;
             this._yearCreated = artwork._yearCreated;
             this._type = artwork._type;
@@ -50,7 +42,7 @@
             this._price = artwork._price;
         }
 
-        public ArtworkID Id
+        public int Id
         {
             get { return this._id; }
             set { this._id = value; }

@@ -2,6 +2,8 @@
 using GalleryFrontend.Models;
 using System.Net.Http;
 using System.Text.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GalleryFrontend.Controllers
 {
@@ -15,41 +17,77 @@ namespace GalleryFrontend.Controllers
             _httpClient.BaseAddress = new Uri("http://localhost:7000/");
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTitle = null, string type = null, int? artistId = null, double? maxPrice = null)
         {
-            var response = await _httpClient.GetAsync("artworks/");
-            var json = await response.Content.ReadAsStringAsync();
-            var artworks = JsonSerializer.Deserialize<List<ArtworkModel>>(json, new JsonSerializerOptions
+            // Construim URL-ul pentru opere
+            string artworksUrl = "artworks/";
+            if (!string.IsNullOrEmpty(searchTitle))
             {
-                PropertyNameCaseInsensitive = true
-            });
+                artworksUrl = $"artworks/searchByTitle?title={Uri.EscapeDataString(searchTitle)}";
+            }
+            else if (type != null && type != "All")
+            {
+                artworksUrl = $"artworks/filterByType?type={Uri.EscapeDataString(type)}";
+            }
+            else if (artistId.HasValue)
+            {
+                artworksUrl = $"artworks/filterByArtistId?artistId={artistId}";
+            }
+            else if (maxPrice.HasValue)
+            {
+                artworksUrl = $"artworks/filterByMaxPrice?maxPrice={maxPrice}";
+            }
 
-            // Pentru fiecare artwork, aducem numele artistului
-            foreach (var artwork in artworks)
+            // Obținem operele
+            var artworksResponse = await _httpClient.GetAsync(artworksUrl);
+            var artworks = new List<ArtworkModel>();
+            if (artworksResponse.IsSuccessStatusCode)
             {
-                var artistResponse = await _httpClient.GetAsync($"artists/{artwork.ArtistId}");
-                if (artistResponse.IsSuccessStatusCode)
+                var artworksJson = await artworksResponse.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(artworksJson))
                 {
-                    var artistJson = await artistResponse.Content.ReadAsStringAsync();
-                    var artist = JsonSerializer.Deserialize<ArtistModel>(artistJson, new JsonSerializerOptions
+                    artworks = JsonSerializer.Deserialize<List<ArtworkModel>>(artworksJson, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
-
-                    if (artist != null)
-                        artwork.ArtistName = artist.Name;
-                    else
-                        artwork.ArtistName = "Unknown";
-                }
-                else
-                {
-                    artwork.ArtistName = "Unknown";
                 }
             }
 
-            return View(artworks);
-        }
+            // Obținem artiștii pentru combobox
+            var artistsResponse = await _httpClient.GetAsync("artists/");
+            var artists = new List<ArtistModel>();
+            if (artistsResponse.IsSuccessStatusCode)
+            {
+                var artistsJson = await artistsResponse.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(artistsJson))
+                {
+                    artists = JsonSerializer.Deserialize<List<ArtistModel>>(artistsJson, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+            }
 
+            // Populăm ArtistName pentru fiecare operă
+            foreach (var artwork in artworks)
+            {
+                var artist = artists.Find(a => a.Id == artwork.ArtistId);
+                artwork.ArtistName = artist?.Name ?? "Unknown";
+            }
+
+            // Creăm modelul pentru view
+            var model = new ArtworkFilterModel
+            {
+                SearchTitle = searchTitle,
+                SelectedType = type ?? "All",
+                SelectedArtistId = artistId,
+                MaxPrice = maxPrice,
+                Artists = artists,
+                Artworks = artworks
+            };
+
+            return View(model);
+        }
 
         public async Task<IActionResult> ViewImages(int artworkId)
         {
@@ -65,6 +103,5 @@ namespace GalleryFrontend.Controllers
 
             return View(images);
         }
-
     }
 }

@@ -6,7 +6,7 @@ namespace GalleryFrontend.Controllers
     {
         public IActionResult Index()
         {
-            return View("VisitorIndex");
+            return View();
         }
     }
 }

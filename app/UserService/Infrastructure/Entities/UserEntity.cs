@@ -36,7 +36,7 @@ namespace UserService.Infrastructure.Entities
 
         public UserEntity(User user)
         {
-            Id = user.Id.Id;
+            Id = user.Id;
             Name = user.Name;
             Role = user.Role;
             Phone = user.Phone;
