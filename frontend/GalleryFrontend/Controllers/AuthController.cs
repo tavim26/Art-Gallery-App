@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GalleryFrontend.Models;
 using System.Net.Http;
-using System.Text.Json;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace GalleryFrontend.Controllers
 {
@@ -11,106 +10,52 @@ namespace GalleryFrontend.Controllers
     {
         private readonly HttpClient _httpClient;
 
-        public AuthController(IHttpClientFactory httpClientFactory)
+        public AuthController(IHttpClientFactory factory)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClient = factory.CreateClient();
             _httpClient.BaseAddress = new Uri("http://localhost:7000/");
         }
 
-        // GET: /Auth/Login
-        public IActionResult Login()
-        {
-            return View();
-        }
 
-        // POST: /Auth/Login
-        [HttpPost]
-        public async Task<IActionResult> Login(string email, string passwordHash)
-        {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(passwordHash))
-            {
-                ViewBag.Error = "Email and password are required.";
-                return View();
-            }
 
-            var response = await _httpClient.PostAsync($"auth/login?email={Uri.EscapeDataString(email)}&passwordHash={Uri.EscapeDataString(passwordHash)}", null);
-            if (!response.IsSuccessStatusCode)
-            {
-                ViewBag.Error = "Invalid email or password.";
-                return View();
-            }
 
-            var json = await response.Content.ReadAsStringAsync();
-            var auth = JsonSerializer.Deserialize<AuthModel>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+        [HttpGet]
+        public IActionResult Register() => View();
 
-            var userResponse = await _httpClient.GetAsync($"users/{auth.UserId}");
-            if (!userResponse.IsSuccessStatusCode)
-            {
-                ViewBag.Error = "Failed to retrieve user information.";
-                return View();
-            }
 
-            var userJson = await userResponse.Content.ReadAsStringAsync();
-            var user = JsonSerializer.Deserialize<UserModel>(userJson, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
 
-            HttpContext.Session.SetInt32("UserId", user.Id);
-            HttpContext.Session.SetString("Role", user.Role);
 
-            return RedirectToAction("Index", "Home");
-        }
-
-        // GET: /Auth/Register
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        // POST: /Auth/Register
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string passwordHash, string role, string phone)
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(passwordHash) || string.IsNullOrEmpty(role))
-            {
-                ViewBag.Error = "Name, email, password, and role are required.";
-                return View();
-            }
-
             var user = new UserModel
             {
                 Name = name,
                 Role = role,
-                Phone = phone ?? ""
+                Phone = phone
             };
 
-            var userResponse = await _httpClient.PostAsync("users", new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json"));
+            // creează user
+            var userJson = JsonSerializer.Serialize(user);
+            var userContent = new StringContent(userJson, Encoding.UTF8, "application/json");
+            var userResponse = await _httpClient.PostAsync("users", userContent);
+
             if (!userResponse.IsSuccessStatusCode)
             {
-                ViewBag.Error = "Failed to create user.";
+                ViewBag.Error = "User creation failed.";
                 return View();
             }
 
-            var userJson = await userResponse.Content.ReadAsStringAsync();
-            if (string.IsNullOrEmpty(userJson))
-            {
-                ViewBag.Error = "Failed to retrieve created user data.";
-                return View();
-            }
+            var userBody = await userResponse.Content.ReadAsStringAsync();
+            var createdUser = JsonSerializer.Deserialize<UserModel>(userBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            var createdUser = JsonSerializer.Deserialize<UserModel>(userJson, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
 
-           
-            if (createdUser.Id <= 0)
+            Console.WriteLine($"userBody = {userBody}");
+            Console.WriteLine($"createdUser.Id = {createdUser?.Id}");
+
+            if (createdUser == null)
             {
-                ViewBag.Error = "Invalid user ID received from server.";
+                ViewBag.Error = "Failed to parse user.";
                 return View();
             }
 
@@ -121,21 +66,73 @@ namespace GalleryFrontend.Controllers
                 PasswordHash = passwordHash
             };
 
-            var authResponse = await _httpClient.PostAsync("auth/signup", new StringContent(JsonSerializer.Serialize(auth), Encoding.UTF8, "application/json"));
+            var authJson = JsonSerializer.Serialize(auth);
+            var authContent = new StringContent(authJson, Encoding.UTF8, "application/json");
+            var authResponse = await _httpClient.PostAsync("auth/signup", authContent);
+
             if (!authResponse.IsSuccessStatusCode)
             {
-                ViewBag.Error = "Failed to create authentication. Please try again.";
+                ViewBag.Error = "Auth creation failed.";
                 return View();
             }
 
             return RedirectToAction("Login");
         }
 
-        // GET: /Auth/Logout
-        public IActionResult Logout()
+
+
+
+
+        [HttpGet]
+        public IActionResult Login() => View();
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string passwordHash)
         {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
+            var res = await _httpClient.GetAsync($"auth/login?email={Uri.EscapeDataString(email)}&password={Uri.EscapeDataString(passwordHash)}");
+            if (!res.IsSuccessStatusCode)
+            {
+                ViewBag.Error = "Invalid credentials.";
+                return View();
+            }
+
+            var json = await res.Content.ReadAsStringAsync();
+            var auth = JsonSerializer.Deserialize<AuthModel>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (auth == null)
+            {
+                ViewBag.Error = "Invalid login response.";
+                return View();
+            }
+
+            // obține user detalii
+            var userRes = await _httpClient.GetAsync($"users/{auth.UserId}");
+            if (!userRes.IsSuccessStatusCode)
+            {
+                ViewBag.Error = "User not found.";
+                return View();
+            }
+
+            var userJson = await userRes.Content.ReadAsStringAsync();
+            var user = JsonSerializer.Deserialize<UserModel>(userJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (user == null)
+            {
+                ViewBag.Error = "Invalid user data.";
+                return View();
+            }
+
+            return user.Role switch
+            {
+                "Employee" => RedirectToAction("Index", "Employee"),
+                "Manager" => RedirectToAction("Index", "Manager"),
+                "Admin" => RedirectToAction("Index", "Admin"),
+                _ => RedirectToAction("Index", "Home")
+            };
         }
+
     }
 }

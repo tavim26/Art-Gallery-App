@@ -79,5 +79,18 @@ namespace UserService.Controllers
 
             return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "users.csv");
         }
+
+
+
+
+        [HttpPost("login")]
+        public ActionResult<User?> LogIn([FromQuery] string email, [FromQuery] string passwordHash)
+        {
+            var user = _usersService.LogIn(email, passwordHash);
+            if (user == null)
+                return Unauthorized("Invalid credentials");
+            return user;
+        }
+
     }
 }

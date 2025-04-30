@@ -66,18 +66,6 @@
     },
     {
       "UpstreamHttpMethod": [ "Get", "Post" ],
-      "UpstreamPathTemplate": "/auth/{everything}",
-      "DownstreamPathTemplate": "/api/Auth/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5128
-        }
-      ]
-    },
-    {
-      "UpstreamHttpMethod": [ "Get", "Post" ],
       "UpstreamPathTemplate": "/notification/{everything}",
       "DownstreamPathTemplate": "/api/Notification/{everything}",
       "DownstreamScheme": "http",

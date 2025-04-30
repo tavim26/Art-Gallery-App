@@ -4,11 +4,6 @@ using UserService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings.GetValue<string>("SecretKey");
-builder.Services.AddSingleton(new JwtTokenGenerator(secretKey));
-
-
 
 var smtpConfig = builder.Configuration.GetSection("Smtp");
 var smtpEmail = smtpConfig.GetValue<string>("Email");
@@ -21,9 +16,7 @@ builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddDbContext<UserDAO>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
-builder.Services.AddDbContext<AuthDAO>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+
 
 // MVC + Swagger
 builder.Services.AddControllers();
@@ -32,7 +25,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 
 app.UseAuthorization();

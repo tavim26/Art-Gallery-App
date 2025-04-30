@@ -26,12 +26,24 @@ namespace UserService.Infrastructure.Entities
         [StringLength(20)]
         public string? Phone { get; set; }
 
+        [Column("Email")]
+        [Required]
+        [StringLength(100)]
+        public string Email { get; set; }
+
+        [Column("PasswordHash")]
+        [Required]
+        [StringLength(255)]
+        public string PasswordHash { get; set; }
+
         public UserEntity()
         {
             Id = 0;
             Name = "";
             Role = "";
             Phone = "";
+            Email = "";
+            PasswordHash = "";
         }
 
         public UserEntity(User user)
@@ -40,11 +52,13 @@ namespace UserService.Infrastructure.Entities
             Name = user.Name;
             Role = user.Role;
             Phone = user.Phone;
+            Email = user.Email;
+            PasswordHash = user.PasswordHash;
         }
 
         public User ToUser()
         {
-            return new User(Id, Name, Role, Phone);
+            return new User(Id, Name, Role, Phone, Email, PasswordHash);
         }
     }
 }

@@ -8,5 +8,8 @@
         bool UpdateUser(User user);
         bool DeleteUser(int id);
         List<User> FilterUsersByRole(string role);
+        User? GetUserByEmail(string email);
+        User? LogIn(string email, string passwordHash);
+
     }
 }

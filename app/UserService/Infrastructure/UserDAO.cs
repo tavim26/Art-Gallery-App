@@ -7,10 +7,14 @@ namespace UserService.Infrastructure
 {
     public class UserDAO : DbContext, IUserDAO
     {
-        private DbSet<UserEntity> _usersSet { get; set; }
+        private readonly DbSet<UserEntity> _usersSet;
 
         public UserDAO(DbContextOptions<UserDAO> options)
-            : base(options) { }
+            : base(options)
+        {
+            _usersSet = Set<UserEntity>();
+        }
+
 
         public List<User> GetUsers()
         {
@@ -114,5 +118,34 @@ namespace UserService.Infrastructure
                 return new List<User>();
             }
         }
+
+        public User? GetUserByEmail(string email)
+        {
+            try
+            {
+                var userEntity = _usersSet.FirstOrDefault(u => u.Email == email);
+                return userEntity?.ToUser();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        public User? LogIn(string email, string passwordHash)
+        {
+            try
+            {
+                var userEntity = _usersSet.FirstOrDefault(u => u.Email == email && u.PasswordHash == passwordHash);
+                return userEntity?.ToUser();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
     }
 }

@@ -5,7 +5,7 @@ namespace UserService.Services
 {
     public class UsersService
     {
-        private IUserDAO _userDAO;
+        private readonly IUserDAO _userDAO;
 
         public UsersService(IUserDAO userDAO)
         {
@@ -26,8 +26,10 @@ namespace UserService.Services
 
         public bool InsertUser(User user)
         {
-            if (user == null || string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Role))
+            if (user == null || string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Role)
+                || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.PasswordHash))
                 return false;
+
             return _userDAO.InsertUser(user);
         }
 
@@ -50,6 +52,20 @@ namespace UserService.Services
             if (string.IsNullOrEmpty(role))
                 return new List<User>();
             return _userDAO.FilterUsersByRole(role);
+        }
+
+        public User? GetUserByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return null;
+            return _userDAO.GetUserByEmail(email);
+        }
+
+        public User? LogIn(string email, string passwordHash)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(passwordHash))
+                return null;
+            return _userDAO.LogIn(email, passwordHash);
         }
     }
 }
