@@ -26,7 +26,7 @@ namespace UserService.Services
 
         public bool InsertUser(User user)
         {
-            if (user == null)
+            if (user == null || string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Role))
                 return false;
             return _userDAO.InsertUser(user);
         }

@@ -1,4 +1,6 @@
-﻿namespace UserService.Domain
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UserService.Domain
 {
     public class Auth
     {
@@ -43,12 +45,18 @@
             set { this._userId = value; }
         }
 
+
+
+        [Required]
+        [EmailAddress]
         public string Email
         {
             get { return this._email; }
             set { this._email = value; }
         }
 
+        [Required]
+        [MinLength(6)]
         public string PasswordHash
         {
             get { return this._passwordHash; }

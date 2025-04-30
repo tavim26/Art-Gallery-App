@@ -7,29 +7,38 @@ namespace UserService.Controllers
     [ApiController]
     public class NotificationController : ControllerBase
     {
-        private NotificationService _notificationService;
+        private readonly NotificationService _notificationService;
 
-        public NotificationController()
+        public NotificationController(NotificationService notificationService)
         {
-            _notificationService = new NotificationService();
+            _notificationService = notificationService;
         }
+
 
         [HttpPost("email")]
         public ActionResult SendEmail([FromQuery] string email, [FromQuery] string message)
         {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(message))
+                return BadRequest("Email and message are required.");
+
             bool result = _notificationService.SendEmail(email, message);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok("Email sent.") : StatusCode(500, "Failed to send email.");
         }
+
+
+
+
+
 
         [HttpPost("sms")]
         public ActionResult SendSMS([FromQuery] string phone, [FromQuery] string message)
         {
+            if (string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(message))
+                return BadRequest("Phone and message are required.");
+
             bool result = _notificationService.SendSMS(phone, message);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok("SMS sent (simulated).") : StatusCode(500, "Failed to send SMS.");
         }
+
     }
 }

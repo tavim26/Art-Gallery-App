@@ -57,5 +57,21 @@ namespace UserService.Infrastructure
                 return false;
             }
         }
+
+
+
+        public Auth? GetAuthByEmail(string email)
+        {
+            try
+            {
+                var authEntity = _authsSet.FirstOrDefault(a => a.Email == email);
+                return authEntity?.ToAuth();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
     }
 }

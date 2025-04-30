@@ -33,11 +33,11 @@ namespace UserService.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateUser(User user)
+        public ActionResult<User> CreateUser(User user)
         {
             bool result = _usersService.InsertUser(user);
             if (result)
-                return Ok();
+                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user); // Returnăm utilizatorul creat
             return BadRequest();
         }
 

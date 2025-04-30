@@ -1,18 +1,34 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
+
 namespace UserService.Services
 {
     public class NotificationService
     {
-        private readonly string smtpHost = "smtp.gmail.com"; // Exemplu Gmail SMTP
+        private readonly string smtpHost = "smtp.gmail.com";
         private readonly int smtpPort = 587;
-        private readonly string smtpEmail = "your-email@gmail.com"; 
-        private readonly string smtpPassword = "your-app-password"; 
 
-        public NotificationService()
+        private readonly string smtpEmail;
+        private readonly string smtpPassword;
+
+        private readonly string twilioAccountSid;
+        private readonly string twilioAuthToken;
+        private readonly string messagingServiceSid;
+
+        public NotificationService(IConfiguration config)
         {
+            smtpEmail = config["Smtp:Email"];
+            smtpPassword = config["Smtp:Password"];
+            twilioAccountSid = config["Twilio:AccountSid"];
+            twilioAuthToken = config["Twilio:AuthToken"];
+            messagingServiceSid = config["Twilio:MessagingServiceSid"];
         }
+
+
 
         public bool SendEmail(string email, string message)
         {
@@ -48,19 +64,24 @@ namespace UserService.Services
 
         public bool SendSMS(string phone, string message)
         {
-            // Simulare cod pentru integrare SMS real (ex: Twilio, Nexmo)
-            // Aici pregătim metoda astfel încât să poată fi înlocuită ușor ulterior
             try
             {
-                if (string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(message))
+                if (string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(message))
                     return false;
 
-                // Exemplu de trimitere reală s-ar face cu API SMS
-                Console.WriteLine($"[SMS REAL - simulare acum] Mesaj SMS către {phone}: {message}");
-                return true;
+                TwilioClient.Init(twilioAccountSid, twilioAuthToken);
+
+                var result = MessageResource.Create(
+                    to: new PhoneNumber(phone),
+                    messagingServiceSid: messagingServiceSid,
+                    body: message
+                );
+
+                return result.ErrorCode == null;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Eroare Twilio: {ex.Message}");
                 return false;
             }
         }

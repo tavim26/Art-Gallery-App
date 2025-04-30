@@ -47,8 +47,15 @@ namespace UserService.Infrastructure
                 return false;
             try
             {
-                _usersSet.Add(new UserEntity(user));
-                return SaveChanges() > 0;
+                var userEntity = new UserEntity(user);
+                _usersSet.Add(userEntity);
+                int result = SaveChanges();
+                if (result > 0)
+                {
+                    user.Id = userEntity.Id; // Actualizăm Id-ul obiectului user
+                    return true;
+                }
+                return false;
             }
             catch
             {

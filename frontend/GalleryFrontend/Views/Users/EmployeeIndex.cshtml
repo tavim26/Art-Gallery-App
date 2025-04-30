@@ -1,0 +1,16 @@
+﻿@{
+	ViewData["Title"] = "Employee Dashboard";
+}
+
+<h1 class="text-center">Employee Dashboard</h1>
+
+<div class="d-flex flex-column align-items-center mt-4">
+	<p>Welcome, Employee! Here are your available actions:</p>
+	<a class="btn btn-primary m-2" href="@Url.Action("Artworks", "Employee")">View Artworks</a>
+	<a class="btn btn-primary m-2" href="@Url.Action("AddArtwork", "Employee")">Add Artwork</a>
+	<a class="btn btn-primary m-2" href="@Url.Action("Artists", "Employee")">View Artists</a>
+	<a class="btn btn-primary m-2" href="@Url.Action("AddArtist", "Employee")">Add Artist</a>
+	<a class="btn btn-primary m-2" href="@Url.Action("ExportArtworksCsv", "Employee")">Export Artworks to CSV</a>
+	<a class="btn btn-primary m-2" href="@Url.Action("ExportArtworksJson", "Employee")">Export Artworks to JSON</a>
+	<a class="btn btn-secondary m-2" href="@Url.Action("Logout", "Auth")">Logout</a>
+</div>

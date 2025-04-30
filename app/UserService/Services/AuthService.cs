@@ -1,4 +1,5 @@
-﻿using UserService.Domain;
+﻿using Org.BouncyCastle.Crypto.Generators;
+using UserService.Domain;
 using UserService.Domain.Contracts;
 
 namespace UserService.Services
@@ -16,6 +17,11 @@ namespace UserService.Services
         {
             if (auth == null)
                 return false;
+
+            // Hash parola
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(auth.PasswordHash);
+            auth.PasswordHash = hashedPassword;
+
             return _authDAO.SignUp(auth);
         }
 
@@ -32,5 +38,13 @@ namespace UserService.Services
                 return false;
             return _authDAO.DeleteAuthByUserId(userId);
         }
+
+
+        public Auth? GetAuthByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return null;
+            return _authDAO.GetAuthByEmail(email);
+        }
+
     }
 }
