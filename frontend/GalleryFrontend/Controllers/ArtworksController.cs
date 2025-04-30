@@ -7,101 +7,133 @@ using System.Threading.Tasks;
 
 namespace GalleryFrontend.Controllers
 {
-    public class ArtworksController : Controller
+
+   
+
+    namespace GalleryFrontend.Controllers
     {
-        private readonly HttpClient _httpClient;
-
-        public ArtworksController(IHttpClientFactory httpClientFactory)
+        public class ArtworksController : Controller
         {
-            _httpClient = httpClientFactory.CreateClient();
-            _httpClient.BaseAddress = new Uri("http://localhost:7000/");
-        }
+            private readonly HttpClient _httpClient;
 
-        public async Task<IActionResult> Index(string searchTitle = null, string type = null, int? artistId = null, double? maxPrice = null)
-        {
-            // Construim URL-ul pentru opere
-            string artworksUrl = "artworks/";
-            if (!string.IsNullOrEmpty(searchTitle))
+            public ArtworksController(IHttpClientFactory httpClientFactory)
             {
-                artworksUrl = $"artworks/searchByTitle?title={Uri.EscapeDataString(searchTitle)}";
-            }
-            else if (type != null && type != "All")
-            {
-                artworksUrl = $"artworks/filterByType?type={Uri.EscapeDataString(type)}";
-            }
-            else if (artistId.HasValue)
-            {
-                artworksUrl = $"artworks/filterByArtistId?artistId={artistId}";
-            }
-            else if (maxPrice.HasValue)
-            {
-                artworksUrl = $"artworks/filterByMaxPrice?maxPrice={maxPrice}";
+                _httpClient = httpClientFactory.CreateClient();
+                _httpClient.BaseAddress = new Uri("http://localhost:7000/");
             }
 
-            // Obținem operele
-            var artworksResponse = await _httpClient.GetAsync(artworksUrl);
-            var artworks = new List<ArtworkModel>();
-            if (artworksResponse.IsSuccessStatusCode)
+            public async Task<IActionResult> VisitorIndex(string title = null, string type = null, int? artistId = null)
             {
-                var artworksJson = await artworksResponse.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(artworksJson))
+                string url = "artworks/";
+
+                if (!string.IsNullOrWhiteSpace(title))
+                    url = $"artworks/searchByTitle?title={Uri.EscapeDataString(title)}";
+                else if (!string.IsNullOrWhiteSpace(type))
+                    url = $"artworks/filterByType?type={Uri.EscapeDataString(type)}";
+                else if (artistId.HasValue)
+                    url = $"artworks/filterByArtistId?artistId={artistId}";
+
+                var artworks = await GetArtworksFromUrl(url);
+                var artists = await GetArtists();
+
+                foreach (var artwork in artworks)
+                    artwork.ArtistName = artists.FirstOrDefault(a => a.Id == artwork.ArtistId)?.Name ?? "Unknown";
+
+                var model = new ArtworkFilterModel
                 {
-                    artworks = JsonSerializer.Deserialize<List<ArtworkModel>>(artworksJson, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                }
+                    Artworks = artworks,
+                    Artists = artists
+                };
+
+                return View("IndexVisitor", model);
             }
 
-            // Obținem artiștii pentru combobox
-            var artistsResponse = await _httpClient.GetAsync("artists/");
-            var artists = new List<ArtistModel>();
-            if (artistsResponse.IsSuccessStatusCode)
+            private async Task<List<ArtworkModel>> GetArtworksFromUrl(string url)
             {
-                var artistsJson = await artistsResponse.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(artistsJson))
+                var res = await _httpClient.GetAsync(url);
+                if (!res.IsSuccessStatusCode) return new();
+
+                var json = await res.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<ArtworkModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+            }
+
+
+            public async Task<IActionResult> EmployeeIndex(string title = null, string type = null, int? artistId = null)
+            {
+                string url = "artworks/";
+
+                if (!string.IsNullOrWhiteSpace(title))
+                    url = $"artworks/searchByTitle?title={Uri.EscapeDataString(title)}";
+                else if (!string.IsNullOrWhiteSpace(type))
+                    url = $"artworks/filterByType?type={Uri.EscapeDataString(type)}";
+                else if (artistId.HasValue)
+                    url = $"artworks/filterByArtistId?artistId={artistId}";
+
+                var artworks = await GetArtworksFromUrl(url);
+                var artists = await GetArtists();
+
+                foreach (var artwork in artworks)
+                    artwork.ArtistName = artists.FirstOrDefault(a => a.Id == artwork.ArtistId)?.Name ?? "Unknown";
+
+                var model = new ArtworkFilterModel
                 {
-                    artists = JsonSerializer.Deserialize<List<ArtistModel>>(artistsJson, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                }
+                    Artworks = artworks,
+                    Artists = artists
+                };
+
+                return View("IndexEmployee", model);
             }
 
-            // Populăm ArtistName pentru fiecare operă
-            foreach (var artwork in artworks)
+
+
+            public async Task<IActionResult> ViewImages(int artworkId)
             {
-                var artist = artists.Find(a => a.Id == artwork.ArtistId);
-                artwork.ArtistName = artist?.Name ?? "Unknown";
+                var res = await _httpClient.GetAsync($"artworks/images/{artworkId}");
+                if (!res.IsSuccessStatusCode) return NotFound();
+
+                var json = await res.Content.ReadAsStringAsync();
+                var images = JsonSerializer.Deserialize<List<string>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                return View(images);
             }
 
-            // Creăm modelul pentru view
-            var model = new ArtworkFilterModel
+            public async Task<IActionResult> ExportCsv()
             {
-                SearchTitle = searchTitle,
-                SelectedType = type ?? "All",
-                SelectedArtistId = artistId,
-                MaxPrice = maxPrice,
-                Artists = artists,
-                Artworks = artworks
-            };
+                var res = await _httpClient.GetAsync("artworks/export/csv");
+                if (!res.IsSuccessStatusCode) return BadRequest();
 
-            return View(model);
-        }
+                var bytes = await res.Content.ReadAsByteArrayAsync();
+                return File(bytes, "text/csv", "artworks.csv");
+            }
 
-        public async Task<IActionResult> ViewImages(int artworkId)
-        {
-            var response = await _httpClient.GetAsync($"artworks/images/{artworkId}");
-            if (!response.IsSuccessStatusCode)
-                return NotFound();
-
-            var json = await response.Content.ReadAsStringAsync();
-            var images = JsonSerializer.Deserialize<List<string>>(json, new JsonSerializerOptions
+            public async Task<IActionResult> ExportJson()
             {
-                PropertyNameCaseInsensitive = true
-            });
+                var res = await _httpClient.GetAsync("artworks/export/json");
+                if (!res.IsSuccessStatusCode) return BadRequest();
 
-            return View(images);
+                var json = await res.Content.ReadAsStringAsync();
+                return File(System.Text.Encoding.UTF8.GetBytes(json), "application/json", "artworks.json");
+            }
+
+            private async Task<List<ArtworkModel>> GetArtworks()
+            {
+                var res = await _httpClient.GetAsync("artworks/");
+                if (!res.IsSuccessStatusCode) return new();
+
+                var json = await res.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<ArtworkModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+            }
+
+            private async Task<List<ArtistModel>> GetArtists()
+            {
+                var res = await _httpClient.GetAsync("artists/");
+                if (!res.IsSuccessStatusCode) return new();
+
+                var json = await res.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<ArtistModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+            }
         }
     }
+
+
 }

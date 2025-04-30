@@ -9,34 +9,36 @@ namespace GalleryFrontend.Controllers
     {
         private readonly HttpClient _httpClient;
 
-        public ArtistsController(IHttpClientFactory httpClientFactory)
+        public ArtistsController(IHttpClientFactory factory)
         {
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClient = factory.CreateClient();
             _httpClient.BaseAddress = new Uri("http://localhost:7000/");
         }
 
-        public async Task<IActionResult> Index(string name = null)
+        public async Task<IActionResult> VisitorIndex(string name = null)
         {
-            string url = string.IsNullOrEmpty(name) ? "artists/" : $"artists/searchByName?name={Uri.EscapeDataString(name)}";
-            var response = await _httpClient.GetAsync(url);
-            var json = await response.Content.ReadAsStringAsync();
+            string url = string.IsNullOrWhiteSpace(name)
+                ? "artists/"
+                : $"artists/searchByName?name={Uri.EscapeDataString(name)}";
+
+            var res = await _httpClient.GetAsync(url);
+            if (!res.IsSuccessStatusCode) return View(new List<ArtistModel>());
+
+            var json = await res.Content.ReadAsStringAsync();
             var artists = JsonSerializer.Deserialize<List<ArtistModel>>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
-            });
+            }) ?? new List<ArtistModel>();
 
-            return View(artists);
+            return View("IndexVisitor", artists);
         }
 
         public async Task<IActionResult> ViewPhoto(int id)
         {
-            var response = await _httpClient.GetAsync($"artists/photo/{id}");
-            if (!response.IsSuccessStatusCode)
-                return NotFound();
+            var res = await _httpClient.GetAsync($"artists/photo/{id}");
+            if (!res.IsSuccessStatusCode) return NotFound();
 
-            var photoUrl = await response.Content.ReadAsStringAsync();
-            photoUrl = photoUrl.Trim('"'); // eliminăm ghilimelele JSON
-
+            var photoUrl = (await res.Content.ReadAsStringAsync()).Trim('"');
             return View(model: photoUrl);
         }
     }

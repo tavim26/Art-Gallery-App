@@ -27,6 +27,7 @@ namespace SaleService.Infrastructure
             }
         }
 
+
         public double GetTotalSalesAmount()
         {
             try
