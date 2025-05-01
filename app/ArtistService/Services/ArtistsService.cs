@@ -34,9 +34,15 @@ namespace ArtistService.Services
         public bool UpdateArtist(Artist artist)
         {
             if (artist == null)
+            {
+                Console.WriteLine("ArtistService: artist null");
                 return false;
+            }
+
+            Console.WriteLine($"ArtistService: Updating artist ID={artist.Id}, Name={artist.Name}");
             return _artistDAO.UpdateArtist(artist);
         }
+
 
         public bool DeleteArtist(int id)
         {

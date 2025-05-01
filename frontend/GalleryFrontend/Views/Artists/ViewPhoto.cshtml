@@ -1,13 +1,20 @@
 ﻿@model string
 
 @{
-    ViewData["Title"] = "Artist Photo";
+	ViewData["Title"] = "Artist Photo";
+	var hasPhoto = !string.IsNullOrEmpty(Model);
+	var imageSrc = hasPhoto ? $"data:image/png;base64,{Model}" : null;
 }
 
 <h1 class="text-center">Artist Photo</h1>
 
 <div class="text-center mt-4">
-    <img src="@Model" alt="Artist Photo" class="img-fluid" style="max-height:400px;" />
+	@if (hasPhoto)
+	{
+		<img src="@imageSrc" alt="Artist Photo" class="img-fluid" style="max-height:400px;" />
+	}
+	else
+	{
+		<p class="text-muted">No photo available for this artist.</p>
+	}
 </div>
-
-<a class="btn btn-secondary mt-4" href="/artists">Back to Artists</a>

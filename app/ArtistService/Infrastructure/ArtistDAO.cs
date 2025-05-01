@@ -59,17 +59,41 @@ namespace ArtistService.Infrastructure
         public bool UpdateArtist(Artist artist)
         {
             if (artist == null)
+            {
+                Console.WriteLine("DAO: null artist");
                 return false;
+            }
+
             try
             {
-                _artistsSet.Update(new ArtistEntity(artist));
-                return SaveChanges() > 0;
+                Console.WriteLine($"DAO: Updating artist ID={artist.Id}");
+
+                var existing = _artistsSet.Find(artist.Id);
+                if (existing == null)
+                {
+                    Console.WriteLine("DAO: artist not found in DB");
+                    return false;
+                }
+
+                // Copiere manuală a câmpurilor
+                existing.Name = artist.Name;
+                existing.BirthDate = artist.BirthDate;
+                existing.Birthplace = artist.Birthplace;
+                existing.Nationality = artist.Nationality;
+                existing.Photo = artist.Photo;
+
+                var result = SaveChanges();
+                Console.WriteLine($"DAO: SaveChanges result = {result}");
+
+                return result > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("DAO exception: " + ex.Message);
                 return false;
             }
         }
+
 
         public bool DeleteArtist(int id)
         {

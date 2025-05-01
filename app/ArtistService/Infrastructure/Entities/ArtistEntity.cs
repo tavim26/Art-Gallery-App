@@ -29,7 +29,7 @@ namespace ArtistService.Infrastructure.Entities
         public string? Nationality { get; set; }
 
         [Column("Photo")]
-        [StringLength(255)]
+        [StringLength(int.MaxValue)]
         public string? Photo { get; set; }
 
         public ArtistEntity()

@@ -7,12 +7,16 @@
 <h1 class="text-center">Artwork Images</h1>
 
 <div class="d-flex flex-wrap justify-content-center mt-4">
-    @foreach (var imgUrl in Model)
-    {
-        <div class="m-2">
-            <img src="@imgUrl" alt="Artwork Image" class="img-fluid" style="max-height:300px;" />
-        </div>
-    }
+	@foreach (var imgUrl in Model)
+	{
+		if (!string.IsNullOrEmpty(imgUrl))
+		{
+			<div class="m-2 border rounded p-2">
+				<img src="@imgUrl" alt="Artwork Image" class="img-fluid" style="max-height:300px;" />
+			</div>
+		}
+	}
 </div>
+
 
 <a class="btn btn-secondary mt-4" href="/artworks">Back to Artworks</a>

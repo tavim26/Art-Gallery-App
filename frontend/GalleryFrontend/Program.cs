@@ -12,10 +12,13 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+
+
 // Ad?ug?m HttpClientFactory pentru apeluri HTTP
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

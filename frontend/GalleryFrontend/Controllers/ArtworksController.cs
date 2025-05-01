@@ -9,10 +9,7 @@ using System.Text;
 namespace GalleryFrontend.Controllers
 {
 
-   
-
-    namespace GalleryFrontend.Controllers
-    {
+    
         public class ArtworksController : Controller
         {
             private readonly HttpClient _httpClient;
@@ -219,4 +216,3 @@ namespace GalleryFrontend.Controllers
     }
 
 
-}

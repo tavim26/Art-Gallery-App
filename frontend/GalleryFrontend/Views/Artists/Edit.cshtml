@@ -1,17 +1,19 @@
 ﻿@model GalleryFrontend.Models.ArtistModel
 
 @{
-	ViewData["Title"] = "Add Artist";
+	ViewData["Title"] = "Edit Artist";
 }
 
-<h2 class="text-center mt-3">Add New Artist</h2>
+<h2 class="text-center mt-3">Edit Artist</h2>
 
 @if (ViewBag.Error != null)
 {
 	<div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<form asp-action="Add" method="post" enctype="multipart/form-data" class="mt-4">
+<form asp-action="Edit" method="post" enctype="multipart/form-data" class="mt-4">
+	<input type="hidden" asp-for="Id" />
+
 	<div class="mb-3">
 		<label class="form-label">Name</label>
 		<input asp-for="Name" class="form-control" required />
@@ -33,10 +35,10 @@
 	</div>
 
 	<div class="mb-3">
-		<label class="form-label">Photo (jpg, png)</label>
-		<input type="file" name="photo" accept=".jpg,.jpeg,.png" class="form-control" required />
+		<label class="form-label">Replace Photo (optional)</label>
+		<input type="file" name="photo" accept=".jpg,.jpeg,.png" class="form-control" />
 	</div>
 
-	<button type="submit" class="btn btn-success">Save</button>
+	<button type="submit" class="btn btn-primary">Update</button>
 	<a href="@Url.Action("EmployeeIndex", "Artists")" class="btn btn-secondary ms-2">Cancel</a>
 </form>
