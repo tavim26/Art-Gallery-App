@@ -35,11 +35,24 @@ namespace UserService.Controllers
         [HttpPost]
         public ActionResult<User> CreateUser(User user)
         {
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState INVALID:");
+                foreach (var kvp in ModelState)
+                {
+                    foreach (var err in kvp.Value.Errors)
+                        Console.WriteLine($" - {kvp.Key}: {err.ErrorMessage}");
+                }
+                return BadRequest("Model validation failed.");
+            }
+
             bool result = _usersService.InsertUser(user);
             if (result)
-                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user); // Returnăm utilizatorul creat
-            return BadRequest();
+                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+
+            return BadRequest("Insert failed.");
         }
+
 
         [HttpPut]
         public ActionResult UpdateUser(User user)
@@ -83,7 +96,7 @@ namespace UserService.Controllers
 
 
 
-        [HttpPost("login")]
+        [HttpGet("login")]
         public ActionResult<User?> LogIn([FromQuery] string email, [FromQuery] string passwordHash)
         {
             var user = _usersService.LogIn(email, passwordHash);

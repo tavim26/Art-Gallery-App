@@ -49,23 +49,30 @@ namespace UserService.Infrastructure
         {
             if (user == null)
                 return false;
+
             try
             {
                 var userEntity = new UserEntity(user);
                 _usersSet.Add(userEntity);
                 int result = SaveChanges();
+                Console.WriteLine($"INSERT RESULT: {result}");
+
                 if (result > 0)
                 {
-                    user.Id = userEntity.Id; // Actualizăm Id-ul obiectului user
+                    user.Id = userEntity.Id;
                     return true;
                 }
+
+                Console.WriteLine("Insert failed at SaveChanges.");
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("INSERT EXCEPTION: " + ex.Message);
                 return false;
             }
         }
+
 
         public bool UpdateUser(User user)
         {
@@ -145,6 +152,15 @@ namespace UserService.Infrastructure
                 return null;
             }
         }
+
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserEntity>();
+            base.OnModelCreating(modelBuilder);
+        }
+
 
 
     }

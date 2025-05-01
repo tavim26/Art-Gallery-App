@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace GalleryFrontend.Controllers
 {
@@ -132,6 +133,88 @@ namespace GalleryFrontend.Controllers
                 var json = await res.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<ArtistModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
             }
+
+
+
+
+            [HttpGet]
+            public async Task<IActionResult> Add()
+            {
+                var artists = await GetArtists();
+                var model = new ArtworkFormModel { Artists = artists };
+                return View(model);
+            }
+
+            [HttpPost]
+            public async Task<IActionResult> Add(ArtworkModel artwork)
+            {
+                var json = JsonSerializer.Serialize(artwork);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync("artworks", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    ViewBag.Error = "Artwork creation failed.";
+                    var model = new ArtworkFormModel { Artwork = artwork, Artists = await GetArtists() };
+                    return View(model);
+                }
+
+                return RedirectToAction("EmployeeIndex");
+            }
+
+
+
+            [HttpGet]
+            public async Task<IActionResult> Edit(int id)
+            {
+                var response = await _httpClient.GetAsync($"artworks/{id}");
+                if (!response.IsSuccessStatusCode) return NotFound();
+
+                var json = await response.Content.ReadAsStringAsync();
+                var artwork = JsonSerializer.Deserialize<ArtworkModel>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                var model = new ArtworkFormModel
+                {
+                    Artwork = artwork,
+                    Artists = await GetArtists()
+                };
+
+                return View(model);
+            }
+
+            [HttpPost]
+            public async Task<IActionResult> Edit(ArtworkModel artwork)
+            {
+                var json = JsonSerializer.Serialize(artwork);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync("artworks", content);
+                if (!response.IsSuccessStatusCode)
+                {
+                    ViewBag.Error = "Update failed.";
+                    var model = new ArtworkFormModel { Artwork = artwork, Artists = await GetArtists() };
+                    return View(model);
+                }
+
+                return RedirectToAction("EmployeeIndex");
+            }
+
+
+
+            [HttpPost]
+            public async Task<IActionResult> Delete(int id)
+            {
+                var response = await _httpClient.DeleteAsync($"artworks/{id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = "Deletion failed.";
+                }
+
+                return RedirectToAction("EmployeeIndex");
+            }
+
+
+
         }
     }
 

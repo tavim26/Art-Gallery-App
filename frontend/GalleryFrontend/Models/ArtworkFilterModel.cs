@@ -1,7 +1,12 @@
 ﻿using GalleryFrontend.Models;
 
-public class ArtworkFilterModel
+namespace GalleryFrontend.Models
 {
-    public List<ArtworkModel> Artworks { get; set; } = new();
-    public List<ArtistModel> Artists { get; set; } = new();
+
+    public class ArtworkFilterModel
+    {
+        public List<ArtworkModel> Artworks { get; set; } = new();
+        public List<ArtistModel> Artists { get; set; } = new();
+    }
+
 }

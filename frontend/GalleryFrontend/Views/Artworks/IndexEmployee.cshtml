@@ -13,12 +13,14 @@
             <button type="submit" class="btn btn-primary w-100">Search</button>
         </div>
     </form>
+	
+	
 
     <form method="get" asp-action="EmployeeIndex" class="row mb-2">
         <div class="col-md-8">
             <select name="type" class="form-select">
                 <option value="">-- Select Type --</option>
-                <option value="Picture">Picture</option>
+                <option value="Painting">Painting</option>
                 <option value="Sculpture">Sculpture</option>
                 <option value="Photography">Photography</option>
             </select>
@@ -27,21 +29,26 @@
             <button type="submit" class="btn btn-primary w-100">Filter by Type</button>
         </div>
     </form>
+	
+	
+	
 
     <form method="get" asp-action="EmployeeIndex" class="row mb-4">
-        <div class="col-md-8">
-            <select name="artistId" class="form-select">
-                <option value="">-- Select Artist --</option>
-                @foreach (var artist in Model.Artists)
-                {
-                    <option value="@artist.Id">@artist.Name</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-primary w-100">Filter by Artist</button>
-        </div>
+	    <div class="col-md-8">
+		    <select name="artistId" class="form-select">
+			    <option value="">-- Select Artist --</option>
+			    @foreach (var artist in Model.Artists)
+			    {
+				    <option value="@artist.Id">@artist.Name</option>
+			    }
+		    </select>
+	    </div>
+	    <div class="col-md-4">
+		    <button type="submit" class="btn btn-primary w-100">Filter by Artist</button>
+	    </div>
     </form>
+	
+
 
     <div class="mb-3 d-flex gap-2">
         <a class="btn btn-success" href="@Url.Action("Add", "Artworks")">Add New Artwork</a>
@@ -49,6 +56,7 @@
         <a class="btn btn-outline-secondary" href="@Url.Action("ExportJson", "Artworks")">Export JSON</a>
     </div>
 </div>
+
 
 <table class="table table-striped table-bordered">
     <thead>

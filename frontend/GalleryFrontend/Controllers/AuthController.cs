@@ -16,14 +16,8 @@ namespace GalleryFrontend.Controllers
             _httpClient.BaseAddress = new Uri("http://localhost:7000/");
         }
 
-
-
-
         [HttpGet]
         public IActionResult Register() => View();
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string passwordHash, string role, string phone)
@@ -31,48 +25,25 @@ namespace GalleryFrontend.Controllers
             var user = new UserModel
             {
                 Name = name,
+                Email = email,
+                PasswordHash = passwordHash,
                 Role = role,
                 Phone = phone
             };
 
-            // creează user
-            var userJson = JsonSerializer.Serialize(user);
-            var userContent = new StringContent(userJson, Encoding.UTF8, "application/json");
-            var userResponse = await _httpClient.PostAsync("users", userContent);
-
-            if (!userResponse.IsSuccessStatusCode)
+            var json = JsonSerializer.Serialize(user, new JsonSerializerOptions
             {
-                ViewBag.Error = "User creation failed.";
-                return View();
-            }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
 
-            var userBody = await userResponse.Content.ReadAsStringAsync();
-            var createdUser = JsonSerializer.Deserialize<UserModel>(userBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            Console.WriteLine("Sending user JSON: " + json);
 
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("users", content);
 
-            Console.WriteLine($"userBody = {userBody}");
-            Console.WriteLine($"createdUser.Id = {createdUser?.Id}");
-
-            if (createdUser == null)
+            if (!response.IsSuccessStatusCode)
             {
-                ViewBag.Error = "Failed to parse user.";
-                return View();
-            }
-
-            var auth = new AuthModel
-            {
-                UserId = createdUser.Id,
-                Email = email,
-                PasswordHash = passwordHash
-            };
-
-            var authJson = JsonSerializer.Serialize(auth);
-            var authContent = new StringContent(authJson, Encoding.UTF8, "application/json");
-            var authResponse = await _httpClient.PostAsync("auth/signup", authContent);
-
-            if (!authResponse.IsSuccessStatusCode)
-            {
-                ViewBag.Error = "Auth creation failed.";
+                ViewBag.Error = "User registration failed.";
                 return View();
             }
 
@@ -80,19 +51,14 @@ namespace GalleryFrontend.Controllers
         }
 
 
-
-
-
         [HttpGet]
         public IActionResult Login() => View();
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> Login(string email, string passwordHash)
         {
-            var res = await _httpClient.GetAsync($"auth/login?email={Uri.EscapeDataString(email)}&password={Uri.EscapeDataString(passwordHash)}");
+            var res = await _httpClient.GetAsync($"users/login?email={Uri.EscapeDataString(email)}&passwordHash={Uri.EscapeDataString(passwordHash)}");
+
             if (!res.IsSuccessStatusCode)
             {
                 ViewBag.Error = "Invalid credentials.";
@@ -100,28 +66,11 @@ namespace GalleryFrontend.Controllers
             }
 
             var json = await res.Content.ReadAsStringAsync();
-            var auth = JsonSerializer.Deserialize<AuthModel>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (auth == null)
-            {
-                ViewBag.Error = "Invalid login response.";
-                return View();
-            }
-
-            // obține user detalii
-            var userRes = await _httpClient.GetAsync($"users/{auth.UserId}");
-            if (!userRes.IsSuccessStatusCode)
-            {
-                ViewBag.Error = "User not found.";
-                return View();
-            }
-
-            var userJson = await userRes.Content.ReadAsStringAsync();
-            var user = JsonSerializer.Deserialize<UserModel>(userJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var user = JsonSerializer.Deserialize<UserModel>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (user == null)
             {
-                ViewBag.Error = "Invalid user data.";
+                ViewBag.Error = "Invalid response.";
                 return View();
             }
 
@@ -133,6 +82,5 @@ namespace GalleryFrontend.Controllers
                 _ => RedirectToAction("Index", "Home")
             };
         }
-
     }
 }

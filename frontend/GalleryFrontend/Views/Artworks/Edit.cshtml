@@ -1,6 +1,67 @@
-﻿namespace GalleryFrontend.Views.Artworks
-{
-    public class Edit
-    {
-    }
+﻿@model GalleryFrontend.Models.ArtworkFormModel
+
+@{
+    ViewData["Title"] = "Edit Artwork";
 }
+
+<h2 class="text-center mt-3">Edit Artwork</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Edit" method="post" class="mt-4">
+    <input type="hidden" asp-for="Artwork.Id" />
+
+    <div class="mb-3">
+        <label for="Title" class="form-label">Title</label>
+        <input asp-for="Artwork.Title" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="Type" class="form-label">Type</label>
+        <select asp-for="Artwork.Type" class="form-select" required>
+            <option value="">-- Select Type --</option>
+            <option>Painting</option>
+            <option>Sculpture</option>
+            <option>Photography</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="ArtistId" class="form-label">Artist</label>
+        <select asp-for="Artwork.ArtistId" class="form-select" required>
+            <option value="">-- Select Artist --</option>
+            @foreach (var artist in Model.Artists)
+            {
+                <option value="@artist.Id" selected="@(artist.Id == Model.Artwork.ArtistId)">
+                    @artist.Name
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="YearCreated" class="form-label">Year Created</label>
+        <select asp-for="Artwork.YearCreated" class="form-select" required>
+            @{
+                var currentYear = DateTime.Now.Year;
+                for (int year = currentYear; year >= 1900; year--)
+                {
+                    <option value="@year" selected="@(year == Model.Artwork.YearCreated)">
+                        @year
+                    </option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="Price" class="form-label">Price</label>
+        <input asp-for="Artwork.Price" class="form-control" type="number" min="10000" max="50000" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a href="@Url.Action("EmployeeIndex", "Artworks")" class="btn btn-secondary ms-2">Cancel</a>
+</form>
