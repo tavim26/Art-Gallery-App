@@ -53,10 +53,17 @@ namespace GalleryFrontend.Controllers
             return View("IndexEmployee", model);
         }
 
+
+        [HttpGet]
         public async Task<IActionResult> ViewImages(int artworkId)
         {
             var images = await _api.GetArtworkImagesAsync(artworkId);
-            if (images == null || images.Count == 0) return NotFound();
+            if (images == null || images.Count == 0)
+            {
+                ViewBag.Error = "No images found for this artwork.";
+                return View(new List<string>());
+            }
+
             return View(images);
         }
 
@@ -138,17 +145,20 @@ namespace GalleryFrontend.Controllers
         }
 
         [HttpPost]
-public async Task<IActionResult> AddImage(ArtworkImageModel model)
-{
-    var success = await _api.AddArtworkImageAsync(model);
-    if (!success)
-    {
-        ViewBag.Error = "Failed to add image.";
-        return View(model);
-    }
+        public async Task<IActionResult> AddImage(ArtworkImageModel model)
+        {
+            var success = await _api.AddArtworkImageAsync(model);
+            if (!success)
+            {
+                ViewBag.Error = "Failed to add image.";
+                return View(model);
+            }
 
-    return RedirectToAction("ViewImages", new { artworkId = model.ArtworkId });
-}
+            return RedirectToAction("ViewImages", new { artworkId = model.ArtworkId });
+        }
+
+
+
 
 
     }

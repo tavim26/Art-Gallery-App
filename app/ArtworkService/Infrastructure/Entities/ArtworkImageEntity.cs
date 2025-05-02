@@ -18,7 +18,6 @@ namespace ArtworkService.Infrastructure.Entities
 
         [Column("ImageUrl")]
         [Required]
-        [StringLength(250)]
         public string ImageUrl { get; set; }
 
         public ArtworkImageEntity()

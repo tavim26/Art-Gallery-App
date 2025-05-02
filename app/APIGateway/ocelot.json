@@ -13,7 +13,8 @@
           "Host": "localhost",
           "Port": 5266
         }
-      ]
+      ],
+      "Priority": 0
     },
     {
       "UpstreamHttpMethod": [ "Get" ],
@@ -25,7 +26,8 @@
           "Host": "localhost",
           "Port": 5266
         }
-      ]
+      ],
+      "Priority": 1
     },
     {
       "UpstreamHttpMethod": [ "Get", "Post" ],
@@ -37,8 +39,10 @@
           "Host": "localhost",
           "Port": 5266
         }
-      ]
+      ],
+      "Priority": 2
     },
+
 
     {
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],

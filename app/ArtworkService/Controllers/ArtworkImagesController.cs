@@ -25,6 +25,8 @@ namespace ArtworkService.Controllers
             return result ? Ok() : BadRequest("Failed to insert image.");
         }
 
+
+
         [HttpGet("{artworkId:int}")]
         public ActionResult<List<string>> GetArtworkImages(int artworkId)
         {
@@ -35,5 +37,6 @@ namespace ArtworkService.Controllers
             var urls = images.Select(img => img.ImageUrl).ToList();
             return Ok(urls);
         }
+
     }
 }
