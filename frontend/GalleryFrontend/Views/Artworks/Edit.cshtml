@@ -1,7 +1,8 @@
-﻿@model GalleryFrontend.Models.ArtworkFormModel
+﻿@model GalleryFrontend.Models.ArtworkModel
 
 @{
     ViewData["Title"] = "Edit Artwork";
+    var artists = ViewBag.Artists as List<GalleryFrontend.Models.ArtistModel>;
 }
 
 <h2 class="text-center mt-3">Edit Artwork</h2>
@@ -12,30 +13,30 @@
 }
 
 <form asp-action="Edit" method="post" class="mt-4">
-    <input type="hidden" asp-for="Artwork.Id" />
+    <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">
-        <label for="Title" class="form-label">Title</label>
-        <input asp-for="Artwork.Title" class="form-control" required />
+        <label class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" required />
     </div>
 
     <div class="mb-3">
-        <label for="Type" class="form-label">Type</label>
-        <select asp-for="Artwork.Type" class="form-select" required>
+        <label class="form-label">Type</label>
+        <select asp-for="Type" class="form-select" required>
             <option value="">-- Select Type --</option>
-            <option>Painting</option>
-            <option>Sculpture</option>
-            <option>Photography</option>
+            <option selected="@("Painting" == Model.Type)">Painting</option>
+            <option selected="@("Sculpture" == Model.Type)">Sculpture</option>
+            <option selected="@("Photography" == Model.Type)">Photography</option>
         </select>
     </div>
 
     <div class="mb-3">
-        <label for="ArtistId" class="form-label">Artist</label>
-        <select asp-for="Artwork.ArtistId" class="form-select" required>
+        <label class="form-label">Artist</label>
+        <select asp-for="ArtistId" class="form-select" required>
             <option value="">-- Select Artist --</option>
-            @foreach (var artist in Model.Artists)
+            @foreach (var artist in artists)
             {
-                <option value="@artist.Id" selected="@(artist.Id == Model.Artwork.ArtistId)">
+                <option value="@artist.Id" selected="@(artist.Id == Model.ArtistId)">
                     @artist.Name
                 </option>
             }
@@ -43,13 +44,13 @@
     </div>
 
     <div class="mb-3">
-        <label for="YearCreated" class="form-label">Year Created</label>
-        <select asp-for="Artwork.YearCreated" class="form-select" required>
+        <label class="form-label">Year Created</label>
+        <select asp-for="YearCreated" class="form-select" required>
             @{
                 var currentYear = DateTime.Now.Year;
                 for (int year = currentYear; year >= 1900; year--)
                 {
-                    <option value="@year" selected="@(year == Model.Artwork.YearCreated)">
+                    <option value="@year" selected="@(year == Model.YearCreated)">
                         @year
                     </option>
                 }
@@ -58,10 +59,10 @@
     </div>
 
     <div class="mb-3">
-        <label for="Price" class="form-label">Price</label>
-        <input asp-for="Artwork.Price" class="form-control" type="number" min="10000" max="50000" required />
+        <label class="form-label">Price</label>
+        <input asp-for="Price" class="form-control" type="number" min="10000" max="50000" required />
     </div>
 
     <button type="submit" class="btn btn-primary">Update</button>
-    <a href="@Url.Action("EmployeeIndex", "Artworks")" class="btn btn-secondary ms-2">Cancel</a>
+    <a asp-action="EmployeeIndex" class="btn btn-secondary ms-2">Cancel</a>
 </form>

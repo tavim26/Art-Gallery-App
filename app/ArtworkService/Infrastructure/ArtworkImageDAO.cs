@@ -7,18 +7,21 @@ namespace ArtworkService.Infrastructure
 {
     public class ArtworkImageDAO : DbContext, IArtworkImageDAO
     {
-        private DbSet<ArtworkImageEntity> _artworkImagesSet { get; set; }
+        private DbSet<ArtworkImageEntity> ArtworkImages => Set<ArtworkImageEntity>();
 
         public ArtworkImageDAO(DbContextOptions<ArtworkImageDAO> options)
             : base(options) { }
 
         public bool InsertArtworkImage(ArtworkImage image)
         {
-            if (image == null)
+            if (image == null || string.IsNullOrWhiteSpace(image.ImageUrl) || image.ArtworkId <= 0)
+            {
                 return false;
+            }
+
             try
             {
-                _artworkImagesSet.Add(new ArtworkImageEntity(image));
+                ArtworkImages.Add(new ArtworkImageEntity(image));
                 return SaveChanges() > 0;
             }
             catch
@@ -29,16 +32,17 @@ namespace ArtworkService.Infrastructure
 
         public List<ArtworkImage> GetArtworkImages(int artworkId)
         {
+            if (artworkId <= 0)
+            {
+                return new List<ArtworkImage>();
+            }
+
             try
             {
-                List<ArtworkImage> images = new List<ArtworkImage>();
-                if (_artworkImagesSet != null)
-                {
-                    var query = _artworkImagesSet.Where(img => img.ArtworkId == artworkId);
-                    foreach (var imgEntity in query)
-                        images.Add(imgEntity.ToArtworkImage());
-                }
-                return images;
+                return ArtworkImages
+                    .Where(img => img.ArtworkId == artworkId)
+                    .Select(img => img.ToArtworkImage())
+                    .ToList();
             }
             catch
             {

@@ -1,5 +1,6 @@
 ﻿using ArtistService.Domain;
-using ArtistService.Infrastructure;
+using ArtistService.Domain.DTO;
+using ArtistService.Domain.Mappers;
 using ArtistService.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,144 +10,94 @@ namespace ArtistService.Controllers
     [ApiController]
     public class ArtistsController : ControllerBase
     {
-        private ArtistsService _artistsService;
+        private readonly ArtistsService _artistsService;
 
-        public ArtistsController(ArtistDAO artistDAO)
+        public ArtistsController(ArtistsService artistsService)
         {
-            _artistsService = new ArtistsService(artistDAO);
+            _artistsService = artistsService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Artist>> GetArtists()
+        public ActionResult<IEnumerable<ArtistDTO>> GetArtists()
         {
-            return _artistsService.GetArtists();
+            var artists = _artistsService.GetArtists()
+                                         .Select(ArtistMapper.ToDTO)
+                                         .ToList();
+
+            return Ok(artists);
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Artist?> GetArtistById(int id)
+        public ActionResult<ArtistDTO> GetArtistById(int id)
         {
             var artist = _artistsService.GetArtist(id);
             if (artist == null)
                 return NotFound();
-            return artist;
+
+            return Ok(ArtistMapper.ToDTO(artist));
         }
 
+
+
+
+
         [HttpPost]
-        public ActionResult CreateArtist()
+        public ActionResult CreateArtist(ArtistDTO dto)
         {
-            var form = Request.Form;
+            if (string.IsNullOrWhiteSpace(dto.Name))
+                return BadRequest("Name is required.");
 
-            var name = form["Name"];
-            var birthDate = DateTime.TryParse(form["BirthDate"], out var bd) ? bd : (DateTime?)null;
-            var birthplace = form["Birthplace"];
-            var nationality = form["Nationality"];
-            var file = Request.Form.Files.GetFile("Photo");
+            // Dacă nu se trimite poză, inițializează cu string gol
+            if (dto.Photo == null)
+                dto.Photo = "";
 
-            if (file == null || file.Length == 0)
-                return BadRequest("Photo is required.");
-
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-            var photoBytes = ms.ToArray();
-            var base64Photo = Convert.ToBase64String(photoBytes);
-
-            var artist = new Artist
-            {
-                Name = name,
-                BirthDate = birthDate,
-                Birthplace = birthplace,
-                Nationality = nationality,
-                Photo = base64Photo
-            };
-
+            var artist = ArtistMapper.FromDTO(dto);
             var result = _artistsService.InsertArtist(artist);
+
+            return result ? Ok() : BadRequest();
+        }
+
+
+        [HttpPut]
+        public ActionResult UpdateArtist(ArtistDTO dto)
+        {
+            if (dto.Id <= 0)
+                return BadRequest("Invalid artist ID.");
+
+            var existing = _artistsService.GetArtist(dto.Id);
+            if (existing == null)
+                return NotFound();
+
+            if (string.IsNullOrEmpty(dto.Photo))
+                dto.Photo = existing.Photo;
+
+            var artist = ArtistMapper.FromDTO(dto);
+            var result = _artistsService.UpdateArtist(artist);
+
             return result ? Ok() : BadRequest();
         }
 
 
 
 
-        [HttpPut]
-        public ActionResult UpdateArtist()
-        {
-            try
-            {
-                var form = Request.Form;
-
-                if (!int.TryParse(form["Id"], out var id))
-                {
-                    Console.WriteLine("Missing or invalid Id.");
-                    return BadRequest("Missing or invalid Id.");
-                }
-
-                var name = form["Name"];
-                var birthDateStr = form["BirthDate"];
-                var birthplace = form["Birthplace"];
-                var nationality = form["Nationality"];
-
-                Console.WriteLine($"Updating artist: ID={id}, Name={name}");
-
-                DateTime? birthDate = null;
-                if (DateTime.TryParse(birthDateStr, out var bd))
-                    birthDate = bd;
-
-                var file = form.Files.GetFile("Photo");
-                string base64Photo = "";
-
-                if (file != null && file.Length > 0)
-                {
-                    using var ms = new MemoryStream();
-                    file.CopyTo(ms);
-                    base64Photo = Convert.ToBase64String(ms.ToArray());
-                }
-
-                var existing = _artistsService.GetArtist(id);
-                if (existing == null)
-                {
-                    Console.WriteLine("Artist not found.");
-                    return NotFound();
-                }
-
-                var artist = new Artist
-                {
-                    Id = id,
-                    Name = name,
-                    BirthDate = birthDate,
-                    Birthplace = birthplace,
-                    Nationality = nationality,
-                    Photo = string.IsNullOrEmpty(base64Photo) ? existing.Photo : base64Photo
-                };
-
-                var result = _artistsService.UpdateArtist(artist);
-                Console.WriteLine(result ? "Update succeeded." : "Update failed.");
-
-                return result ? Ok() : BadRequest();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Exception in UpdateArtist: " + ex.Message);
-                return StatusCode(500, "Internal server error.");
-            }
-        }
-
 
 
         [HttpDelete("{id:int}")]
         public ActionResult DeleteArtist(int id)
         {
-            bool result = _artistsService.DeleteArtist(id);
-            if (result)
-                return Ok();
-            return BadRequest();
+            var result = _artistsService.DeleteArtist(id);
+            return result ? Ok() : BadRequest();
         }
 
         [HttpGet("searchByName")]
-        public ActionResult<IEnumerable<Artist>> SearchArtistsByName([FromQuery] string name)
+        public ActionResult<IEnumerable<ArtistDTO>> SearchArtistsByName([FromQuery] string name)
         {
-            return _artistsService.SearchArtistsByName(name);
+            var artists = _artistsService.SearchArtistsByName(name)
+                                         .Select(ArtistMapper.ToDTO)
+                                         .ToList();
+
+            return Ok(artists);
         }
-
-
 
         [HttpGet("photo/{id:int}")]
         public ActionResult<string> GetArtistPhoto(int id)
@@ -157,6 +108,5 @@ namespace ArtistService.Controllers
 
             return Ok(artist.Photo);
         }
-
     }
 }

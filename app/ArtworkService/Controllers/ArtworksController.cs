@@ -1,4 +1,6 @@
 ﻿using ArtworkService.Domain;
+using ArtworkService.Domain.DTO;
+using ArtworkService.Domain.Mappers;
 using ArtworkService.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -12,79 +14,87 @@ namespace ArtworkService.Controllers
     public class ArtworksController : ControllerBase
     {
         private readonly ArtworksService _artworksService;
-        private readonly ArtworkImagesService _artworkImagesService;
 
         public ArtworksController(ArtworksService artworksService, ArtworkImagesService artworkImagesService)
         {
             _artworksService = artworksService;
-            _artworkImagesService = artworkImagesService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Artwork>> GetArtworks()
+        public ActionResult<IEnumerable<ArtworkDTO>> GetArtworks()
         {
-            return _artworksService.GetArtworks();
+            var artworks = _artworksService.GetArtworks().Select(ArtworkMapper.ToDTO);
+            return Ok(artworks);
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<Artwork?> GetArtworkById(int id)
+        public ActionResult<ArtworkDTO> GetArtworkById(int id)
         {
             var artwork = _artworksService.GetArtwork(id);
             if (artwork == null)
                 return NotFound();
-            return artwork;
+
+            return Ok(ArtworkMapper.ToDTO(artwork));
         }
 
         [HttpPost]
-        public ActionResult CreateArtwork(Artwork artwork)
+        public ActionResult CreateArtwork(ArtworkDTO dto)
         {
+
+            Console.WriteLine($"Received DTO: {JsonSerializer.Serialize(dto)}");
+
+            if (string.IsNullOrWhiteSpace(dto.Title) || string.IsNullOrWhiteSpace(dto.Type))
+                return BadRequest("Title and Type are required.");
+
+            var artwork = ArtworkMapper.FromDTO(dto);
             bool result = _artworksService.InsertArtwork(artwork);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok() : BadRequest();
         }
 
         [HttpPut]
-        public ActionResult UpdateArtwork(Artwork artwork)
+        public ActionResult UpdateArtwork(ArtworkDTO dto)
         {
+            if (dto.Id <= 0)
+                return BadRequest("Invalid artwork ID.");
+
+            var artwork = ArtworkMapper.FromDTO(dto);
             bool result = _artworksService.UpdateArtwork(artwork);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok() : BadRequest();
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult DeleteArtwork(int id)
         {
             bool result = _artworksService.DeleteArtwork(id);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok() : BadRequest();
         }
 
         [HttpGet("searchByTitle")]
-        public ActionResult<IEnumerable<Artwork>> SearchByTitle([FromQuery] string title)
+        public ActionResult<IEnumerable<ArtworkDTO>> SearchByTitle([FromQuery] string title)
         {
-            return _artworksService.SearchByTitle(title);
+            var artworks = _artworksService.SearchByTitle(title).Select(ArtworkMapper.ToDTO);
+            return Ok(artworks);
         }
 
         [HttpGet("filterByType")]
-        public ActionResult<IEnumerable<Artwork>> FilterByType([FromQuery] string type)
+        public ActionResult<IEnumerable<ArtworkDTO>> FilterByType([FromQuery] string type)
         {
-            return _artworksService.FilterByType(type);
+            var artworks = _artworksService.FilterByType(type).Select(ArtworkMapper.ToDTO);
+            return Ok(artworks);
         }
 
-
         [HttpGet("filterByArtistId")]
-        public ActionResult<IEnumerable<Artwork>> FilterByArtistId([FromQuery] int artistId)
+        public ActionResult<IEnumerable<ArtworkDTO>> FilterByArtistId([FromQuery] int artistId)
         {
-            return _artworksService.FilterByArtistId(artistId);
+            var artworks = _artworksService.FilterByArtistId(artistId).Select(ArtworkMapper.ToDTO);
+            return Ok(artworks);
         }
 
         [HttpGet("filterByMaxPrice")]
-        public ActionResult<IEnumerable<Artwork>> FilterByMaxPrice([FromQuery] double maxPrice)
+        public ActionResult<IEnumerable<ArtworkDTO>> FilterByMaxPrice([FromQuery] double maxPrice)
         {
-            return _artworksService.FilterByMaxPrice(maxPrice);
+            var artworks = _artworksService.FilterByMaxPrice(maxPrice).Select(ArtworkMapper.ToDTO);
+            return Ok(artworks);
         }
 
         [HttpGet("export/csv")]
@@ -107,19 +117,9 @@ namespace ArtworkService.Controllers
         {
             var artworks = _artworksService.GetArtworks();
             var json = JsonSerializer.Serialize(artworks);
-
             return File(Encoding.UTF8.GetBytes(json), "application/json", "artworks.json");
         }
 
-        [HttpGet("images/{artworkId:int}")]
-        public ActionResult<List<string>> GetArtworkImages(int artworkId)
-        {
-            var images = _artworkImagesService.GetArtworkImages(artworkId);
-            if (images == null || images.Count == 0)
-                return NotFound();
-
-            var urls = images.Select(img => img.ImageUrl).ToList();
-            return Ok(urls);
-        }
+      
     }
 }

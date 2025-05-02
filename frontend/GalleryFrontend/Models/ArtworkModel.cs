@@ -1,5 +1,9 @@
-﻿namespace GalleryFrontend.Models
+﻿using System.Text.Json.Serialization;
+
+
+namespace GalleryFrontend.Models
 {
+
     public class ArtworkModel
     {
         public int Id { get; set; }
@@ -9,7 +13,6 @@
         public int ArtistId { get; set; }
         public double Price { get; set; }
 
-        public string ArtistName { get; set; } 
+        [JsonIgnore] public string ArtistName { get; set; }
     }
-
 }

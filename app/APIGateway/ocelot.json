@@ -18,7 +18,7 @@
     {
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamPathTemplate": "/artworks/images/{artworkId}",
-      "DownstreamPathTemplate": "/api/Artworks/images/{artworkId}",
+      "DownstreamPathTemplate": "/api/ArtworkImages/{artworkId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -27,6 +27,19 @@
         }
       ]
     },
+    {
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "UpstreamPathTemplate": "/artworkimages/{everything}",
+      "DownstreamPathTemplate": "/api/ArtworkImages/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5266
+        }
+      ]
+    },
+
     {
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "UpstreamPathTemplate": "/artists/{everything}",

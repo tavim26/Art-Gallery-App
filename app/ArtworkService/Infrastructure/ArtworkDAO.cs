@@ -2,27 +2,21 @@
 using ArtworkService.Domain.Contracts;
 using ArtworkService.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace ArtworkService.Infrastructure
 {
     public class ArtworkDAO : DbContext, IArtworkDAO
     {
-        private DbSet<ArtworkEntity> _artworksSet { get; set; }
-        private DbSet<ArtworkImageEntity> _artworkImagesSet { get; set; }
+        private DbSet<ArtworkEntity> Artworks => Set<ArtworkEntity>();
+        private DbSet<ArtworkImageEntity> ArtworkImages => Set<ArtworkImageEntity>();
 
-        public ArtworkDAO(DbContextOptions<ArtworkDAO> options)
-            : base(options) { }
+        public ArtworkDAO(DbContextOptions<ArtworkDAO> options) : base(options) { }
 
-        public List<Artwork> Artworks()
+        public List<Artwork> ListArtworks()
         {
             try
             {
-                List<Artwork> artworks = new List<Artwork>();
-                if (_artworksSet != null)
-                    foreach (var artworkEntity in _artworksSet)
-                        artworks.Add(artworkEntity.ToArtwork());
-                return artworks;
+                return Artworks.Select(a => a.ToArtwork()).ToList();
             }
             catch
             {
@@ -30,85 +24,69 @@ namespace ArtworkService.Infrastructure
             }
         }
 
+
         public Artwork? GetArtworkById(int id)
         {
             try
             {
-                ArtworkEntity artworkEntity = _artworksSet.First(a => a.Id == id);
-                if (artworkEntity != null)
-                    return artworkEntity.ToArtwork();
-                return null;
+                var entity = Artworks.Find(id);
+                return entity?.ToArtwork();
             }
             catch
             {
                 return null;
-            }
-        }
-
-        public List<ArtworkImage> GetArtworkImages(int artworkId)
-        {
-            try
-            {
-                List<ArtworkImage> images = new List<ArtworkImage>();
-                if (_artworkImagesSet != null)
-                {
-                    var query = _artworkImagesSet.Where(img => img.ArtworkId == artworkId);
-                    foreach (var imgEntity in query)
-                        images.Add(imgEntity.ToArtworkImage());
-                }
-                return images;
-            }
-            catch
-            {
-                return new List<ArtworkImage>();
             }
         }
 
         public bool InsertArtwork(Artwork artwork)
         {
-            if (artwork.Title == null || artwork.Type == null)
+            if (artwork == null || string.IsNullOrWhiteSpace(artwork.Title) || string.IsNullOrWhiteSpace(artwork.Type))
                 return false;
+
             try
             {
-                _artworksSet.Add(new ArtworkEntity(artwork));
-                if (this.SaveChanges() > 0)
-                    return true;
+                Artworks.Add(new ArtworkEntity(artwork));
+                return SaveChanges() > 0;
             }
             catch
             {
                 return false;
             }
-            return false;
         }
 
         public bool UpdateArtwork(Artwork artwork)
         {
-            if (artwork.Title == null || artwork.Type == null)
+            if (artwork == null || string.IsNullOrWhiteSpace(artwork.Title) || string.IsNullOrWhiteSpace(artwork.Type))
                 return false;
+
             try
             {
-                _artworksSet.Update(new ArtworkEntity(artwork));
-                if (this.SaveChanges() > 0)
-                    return true;
+                var existing = Artworks.Find(artwork.Id);
+                if (existing == null) return false;
+
+                existing.Title = artwork.Title;
+                existing.YearCreated = artwork.YearCreated;
+                existing.Type = artwork.Type;
+                existing.ArtistId = artwork.ArtistId;
+                existing.Price = artwork.Price;
+
+                return SaveChanges() > 0;
             }
             catch
             {
                 return false;
             }
-            return false;
         }
 
         public bool DeleteArtwork(int id)
         {
             try
             {
-                var artwork = _artworksSet.FirstOrDefault(a => a.Id == id);
-                if (artwork != null)
-                {
-                    _artworksSet.Remove(artwork);
-                    return this.SaveChanges() > 0;
-                }
-                return false;
+                var entity = Artworks.Find(id);
+                if (entity == null) return false;
+
+                Artworks.Remove(entity);
+                return SaveChanges() > 0;
             }
             catch
             {
@@ -116,22 +94,15 @@ namespace ArtworkService.Infrastructure
             }
         }
 
-
         public List<Artwork> SearchByTitle(string title)
         {
             try
             {
-                List<Artwork> artworks = new List<Artwork>();
-                if (_artworksSet != null)
-                {
-                    var query = _artworksSet
-                        .Where(a => a.Title.Contains(title))
-                        .OrderBy(a => a.YearCreated);
-
-                    foreach (var artworkEntity in query)
-                        artworks.Add(artworkEntity.ToArtwork());
-                }
-                return artworks;
+                return Artworks
+                    .Where(a => a.Title.Contains(title))
+                    .OrderBy(a => a.YearCreated)
+                    .Select(a => a.ToArtwork())
+                    .ToList();
             }
             catch
             {
@@ -143,65 +114,43 @@ namespace ArtworkService.Infrastructure
         {
             try
             {
-                List<Artwork> artworks = new List<Artwork>();
-                if (_artworksSet != null)
-                {
-                    var query = _artworksSet
-                        .Where(a => a.Type.Equals(type))
-                        .OrderBy(a => a.YearCreated);
-
-                    foreach (var artworkEntity in query)
-                        artworks.Add(artworkEntity.ToArtwork());
-                }
-                return artworks;
+                return Artworks
+                    .Where(a => a.Type.Equals(type))
+                    .OrderBy(a => a.YearCreated)
+                    .Select(a => a.ToArtwork())
+                    .ToList();
             }
             catch
             {
                 return new List<Artwork>();
             }
         }
-
 
         public List<Artwork> FilterByArtistId(int artistId)
         {
             try
             {
-                List<Artwork> artworks = new List<Artwork>();
-                if (_artworksSet != null)
-                {
-                    var query = _artworksSet
-                        .Where(a => a.ArtistId == artistId)
-                        .OrderBy(a => a.YearCreated);
-
-                    foreach (var artworkEntity in query)
-                        artworks.Add(artworkEntity.ToArtwork());
-                }
-                return artworks;
+                return Artworks
+                    .Where(a => a.ArtistId == artistId)
+                    .OrderBy(a => a.YearCreated)
+                    .Select(a => a.ToArtwork())
+                    .ToList();
             }
             catch
             {
                 return new List<Artwork>();
             }
         }
-
-
-
 
         public List<Artwork> FilterByMaxPrice(double maxPrice)
         {
             try
             {
-                List<Artwork> artworks = new List<Artwork>();
-                if (_artworksSet != null)
-                {
-                    var query = _artworksSet
-                        .Where(a => a.Price <= maxPrice)
-                        .OrderBy(a => a.Price);
-
-                    foreach (var artworkEntity in query)
-                        artworks.Add(artworkEntity.ToArtwork());
-                }
-                return artworks;
+                return Artworks
+                    .Where(a => a.Price <= maxPrice)
+                    .OrderBy(a => a.Price)
+                    .Select(a => a.ToArtwork())
+                    .ToList();
             }
             catch
             {
@@ -209,8 +158,19 @@ namespace ArtworkService.Infrastructure
             }
         }
 
+        public List<ArtworkImage> GetArtworkImages(int artworkId)
+        {
+            try
+            {
+                return ArtworkImages
+                    .Where(img => img.ArtworkId == artworkId)
+                    .Select(img => img.ToArtworkImage())
+                    .ToList();
+            }
+            catch
+            {
+                return new List<ArtworkImage>();
+            }
+        }
     }
-
-
-
 }

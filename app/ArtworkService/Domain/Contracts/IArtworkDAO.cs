@@ -2,7 +2,7 @@
 {
     public interface IArtworkDAO
     {
-        List<Artwork> Artworks();
+        List<Artwork> ListArtworks();
         Artwork? GetArtworkById(int id);
         List<ArtworkImage> GetArtworkImages(int artworkId);
         bool InsertArtwork(Artwork artwork);

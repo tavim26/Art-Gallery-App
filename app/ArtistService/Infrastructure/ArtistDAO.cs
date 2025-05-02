@@ -7,20 +7,15 @@ namespace ArtistService.Infrastructure
 {
     public class ArtistDAO : DbContext, IArtistDAO
     {
-        private DbSet<ArtistEntity> _artistsSet { get; set; }
+        private DbSet<ArtistEntity> Artists => Set<ArtistEntity>();
 
-        public ArtistDAO(DbContextOptions<ArtistDAO> options)
-            : base(options) { }
+        public ArtistDAO(DbContextOptions<ArtistDAO> options) : base(options) { }
 
         public List<Artist> GetArtists()
         {
             try
             {
-                List<Artist> artists = new List<Artist>();
-                if (_artistsSet != null)
-                    foreach (var artistEntity in _artistsSet)
-                        artists.Add(artistEntity.ToArtist());
-                return artists;
+                return Artists.Select(a => a.ToArtist()).ToList();
             }
             catch
             {
@@ -32,7 +27,7 @@ namespace ArtistService.Infrastructure
         {
             try
             {
-                var artistEntity = _artistsSet.FirstOrDefault(a => a.Id == id);
+                var artistEntity = Artists.FirstOrDefault(a => a.Id == id);
                 return artistEntity?.ToArtist();
             }
             catch
@@ -43,11 +38,11 @@ namespace ArtistService.Infrastructure
 
         public bool InsertArtist(Artist artist)
         {
-            if (artist == null)
-                return false;
+            if (artist == null) return false;
+
             try
             {
-                _artistsSet.Add(new ArtistEntity(artist));
+                Artists.Add(new ArtistEntity(artist));
                 return SaveChanges() > 0;
             }
             catch
@@ -58,54 +53,36 @@ namespace ArtistService.Infrastructure
 
         public bool UpdateArtist(Artist artist)
         {
-            if (artist == null)
-            {
-                Console.WriteLine("DAO: null artist");
-                return false;
-            }
+            if (artist == null) return false;
 
             try
             {
-                Console.WriteLine($"DAO: Updating artist ID={artist.Id}");
+                var existing = Artists.Find(artist.Id);
+                if (existing == null) return false;
 
-                var existing = _artistsSet.Find(artist.Id);
-                if (existing == null)
-                {
-                    Console.WriteLine("DAO: artist not found in DB");
-                    return false;
-                }
-
-                // Copiere manuală a câmpurilor
                 existing.Name = artist.Name;
                 existing.BirthDate = artist.BirthDate;
                 existing.Birthplace = artist.Birthplace;
                 existing.Nationality = artist.Nationality;
                 existing.Photo = artist.Photo;
 
-                var result = SaveChanges();
-                Console.WriteLine($"DAO: SaveChanges result = {result}");
-
-                return result > 0;
+                return SaveChanges() > 0;
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine("DAO exception: " + ex.Message);
                 return false;
             }
         }
-
 
         public bool DeleteArtist(int id)
         {
             try
             {
-                var artist = _artistsSet.FirstOrDefault(a => a.Id == id);
-                if (artist != null)
-                {
-                    _artistsSet.Remove(artist);
-                    return SaveChanges() > 0;
-                }
-                return false;
+                var artist = Artists.FirstOrDefault(a => a.Id == id);
+                if (artist == null) return false;
+
+                Artists.Remove(artist);
+                return SaveChanges() > 0;
             }
             catch
             {
@@ -117,14 +94,10 @@ namespace ArtistService.Infrastructure
         {
             try
             {
-                List<Artist> artists = new List<Artist>();
-                if (_artistsSet != null)
-                {
-                    var query = _artistsSet.Where(a => a.Name.Contains(name));
-                    foreach (var artistEntity in query)
-                        artists.Add(artistEntity.ToArtist());
-                }
-                return artists;
+                return Artists
+                    .Where(a => a.Name.Contains(name))
+                    .Select(a => a.ToArtist())
+                    .ToList();
             }
             catch
             {

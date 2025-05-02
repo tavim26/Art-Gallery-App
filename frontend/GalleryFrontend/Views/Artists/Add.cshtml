@@ -11,7 +11,7 @@
 	<div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<form asp-action="Add" method="post" enctype="multipart/form-data" class="mt-4">
+<form asp-action="Add" method="post" class="mt-4">
 	<div class="mb-3">
 		<label class="form-label">Name</label>
 		<input asp-for="Name" class="form-control" required />
@@ -19,24 +19,44 @@
 
 	<div class="mb-3">
 		<label class="form-label">Birth Date</label>
-		<input asp-for="BirthDate" class="form-control" type="date" required />
+		<input asp-for="BirthDate" class="form-control" type="date" />
 	</div>
 
 	<div class="mb-3">
 		<label class="form-label">Birthplace</label>
-		<input asp-for="Birthplace" class="form-control" required />
+		<input asp-for="Birthplace" class="form-control" />
 	</div>
 
 	<div class="mb-3">
 		<label class="form-label">Nationality</label>
-		<input asp-for="Nationality" class="form-control" required />
+		<input asp-for="Nationality" class="form-control" />
 	</div>
 
 	<div class="mb-3">
-		<label class="form-label">Photo (jpg, png)</label>
-		<input type="file" name="photo" accept=".jpg,.jpeg,.png" class="form-control" required />
+		<label class="form-label">Upload Photo (optional)</label>
+		<input type="file" id="photoFile" class="form-control" accept="image/*" />
 	</div>
 
+	<input type="hidden" asp-for="Photo" id="photoBase64" />
+
+
 	<button type="submit" class="btn btn-success">Save</button>
-	<a href="@Url.Action("EmployeeIndex", "Artists")" class="btn btn-secondary ms-2">Cancel</a>
+	<a asp-action="EmployeeIndex" class="btn btn-secondary ms-2">Cancel</a>
 </form>
+
+		
+@section Scripts {
+	<script>
+    document.getElementById("photoFile").addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            // setăm conținutul în hidden input
+            document.getElementById("photoBase64").value = e.target.result.split(",")[1];
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+}

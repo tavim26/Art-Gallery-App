@@ -3,7 +3,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Ad?ug?m suport pentru sesiune
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -14,8 +13,12 @@ builder.Services.AddSession(options =>
 
 
 
-// Ad?ug?m HttpClientFactory pentru apeluri HTTP
 builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<GalleryFrontend.Models.Services.ArtistApiClient>();
+builder.Services.AddScoped<GalleryFrontend.Services.ArtworksApiClient>();
+
+
 
 var app = builder.Build();
 
@@ -30,7 +33,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// Ad?ug?m middleware pentru sesiune înainte de rutare
 app.UseSession();
 
 app.UseRouting();
