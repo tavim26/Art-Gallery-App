@@ -9,7 +9,7 @@
 	<div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<form asp-action="Register" method="post" class="mt-4">
+<form asp-controller="Auth" asp-action="Register" method="post" class="mt-4">
 	<div class="form-group">
 		<label for="name">Name</label>
 		<input type="text" name="name" id="name" class="form-control" required />

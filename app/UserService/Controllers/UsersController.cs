@@ -3,6 +3,9 @@ using UserService.Domain;
 using UserService.Services;
 using System.Text;
 using UserService.Infrastructure;
+using UserService.Domain.DTO;
+using UserService.Domain.Mappers;
+using UserService.Utils;
 
 namespace UserService.Controllers
 {
@@ -32,36 +35,50 @@ namespace UserService.Controllers
             return user;
         }
 
+
+
+
+
         [HttpPost]
-        public ActionResult<User> CreateUser(User user)
+        public ActionResult<UserDTO> CreateUser([FromBody] UserDTO dto)
         {
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("ModelState INVALID:");
-                foreach (var kvp in ModelState)
-                {
-                    foreach (var err in kvp.Value.Errors)
-                        Console.WriteLine($" - {kvp.Key}: {err.ErrorMessage}");
-                }
-                return BadRequest("Model validation failed.");
-            }
+            // Validare minimă
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest("Email and password are required.");
 
-            bool result = _usersService.InsertUser(user);
-            if (result)
-                return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+            // Hash-uim parola și construim modelul User
+            var user = UserMapper.FromDTO(dto, HashHelper.HashPassword(dto.Password));
 
-            return BadRequest("Insert failed.");
+            var result = _usersService.InsertUser(user);
+            if (!result)
+                return BadRequest("Insert failed.");
+
+            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, UserMapper.ToDTO(user));
         }
+
+
+
 
 
         [HttpPut]
-        public ActionResult UpdateUser(User user)
+        public ActionResult UpdateUser([FromBody] UserDTO dto)
         {
+            var existing = _usersService.GetUserById(dto.Id);
+            if (existing == null)
+                return NotFound("User not found.");
+
+            string hashToUse = string.IsNullOrWhiteSpace(dto.Password)
+                ? existing.PasswordHash
+                : HashHelper.HashPassword(dto.Password);
+
+            var user = UserMapper.FromDTO(dto, hashToUse);
+
             bool result = _usersService.UpdateUser(user);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok() : BadRequest("Update failed.");
         }
+
+
+
 
         [HttpDelete("{id:int}")]
         public ActionResult DeleteUser(int id)
@@ -72,11 +89,16 @@ namespace UserService.Controllers
             return BadRequest();
         }
 
+
+
+
         [HttpGet("filterByRole")]
         public ActionResult<IEnumerable<User>> FilterUsersByRole([FromQuery] string role)
         {
             return _usersService.FilterUsersByRole(role);
         }
+
+
 
         [HttpGet("export/csv")]
         public IActionResult ExportUsersCsv()
@@ -96,14 +118,21 @@ namespace UserService.Controllers
 
 
 
-        [HttpGet("login")]
-        public ActionResult<User?> LogIn([FromQuery] string email, [FromQuery] string passwordHash)
+        [HttpPost("login")]
+        public ActionResult<UserDTO> LogIn([FromBody] UserLoginDTO dto)
         {
-            var user = _usersService.LogIn(email, passwordHash);
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return BadRequest("Email and password required.");
+
+            var hash = HashHelper.HashPassword(dto.Password);
+            var user = _usersService.LogIn(dto.Email, hash);
+
             if (user == null)
-                return Unauthorized("Invalid credentials");
-            return user;
+                return Unauthorized("Invalid credentials.");
+
+            return Ok(UserMapper.ToDTO(user));
         }
+
 
     }
 }

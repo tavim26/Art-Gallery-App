@@ -3,21 +3,52 @@ using GalleryFrontend.Models;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using GalleryFrontend.Models.Services;
 
 namespace GalleryFrontend.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly HttpClient _httpClient;
 
-        public AuthController(IHttpClientFactory factory)
+
+        private readonly AuthApiClient _auth;
+
+        public AuthController(AuthApiClient auth)
         {
-            _httpClient = factory.CreateClient();
-            _httpClient.BaseAddress = new Uri("http://localhost:7000/");
+            _auth = auth;
         }
 
-        [HttpGet]
-        public IActionResult Register() => View();
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var user = await _auth.LoginAsync(email, password);
+            if (user == null)
+            {
+                ViewBag.Error = "Invalid credentials.";
+                return View();
+            }
+
+            // salvare in sesiune
+            HttpContext.Session.SetInt32("UserId", user.Id);
+            HttpContext.Session.SetString("UserName", user.Name);
+            HttpContext.Session.SetString("UserRole", user.Role);
+
+            
+            Console.WriteLine($"[AUTH SUCCESS] User '{user.Name}' (ID={user.Id}, Role={user.Role}) logged in and saved to session.");
+
+            return user.Role switch
+            {
+                "Employee" => RedirectToAction("EmployeeIndex", "Artworks"),
+                "Manager" => RedirectToAction("Index", "Manager"),
+                "Admin" => RedirectToAction("Index", "Admin"),
+                _ => RedirectToAction("Index", "Home")
+            };
+        }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Register(string name, string email, string passwordHash, string role, string phone)
@@ -31,17 +62,8 @@ namespace GalleryFrontend.Controllers
                 Phone = phone
             };
 
-            var json = JsonSerializer.Serialize(user, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-
-            Console.WriteLine("Sending user JSON: " + json);
-
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("users", content);
-
-            if (!response.IsSuccessStatusCode)
+            bool success = await _auth.RegisterAsync(user);
+            if (!success)
             {
                 ViewBag.Error = "User registration failed.";
                 return View();
@@ -51,36 +73,20 @@ namespace GalleryFrontend.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult Login() => View();
+
+
+
 
         [HttpPost]
-        public async Task<IActionResult> Login(string email, string passwordHash)
+        public IActionResult Logout()
         {
-            var res = await _httpClient.GetAsync($"users/login?email={Uri.EscapeDataString(email)}&passwordHash={Uri.EscapeDataString(passwordHash)}");
-
-            if (!res.IsSuccessStatusCode)
-            {
-                ViewBag.Error = "Invalid credentials.";
-                return View();
-            }
-
-            var json = await res.Content.ReadAsStringAsync();
-            var user = JsonSerializer.Deserialize<UserModel>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            if (user == null)
-            {
-                ViewBag.Error = "Invalid response.";
-                return View();
-            }
-
-            return user.Role switch
-            {
-                "Employee" => RedirectToAction("Index", "Employee"),
-                "Manager" => RedirectToAction("Index", "Manager"),
-                "Admin" => RedirectToAction("Index", "Admin"),
-                _ => RedirectToAction("Index", "Home")
-            };
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
+
+
+
+
+
     }
 }

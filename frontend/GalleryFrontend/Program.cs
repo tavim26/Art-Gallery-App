@@ -1,3 +1,5 @@
+using GalleryFrontend.Models.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +19,8 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<GalleryFrontend.Models.Services.ArtistApiClient>();
 builder.Services.AddScoped<GalleryFrontend.Services.ArtworksApiClient>();
+builder.Services.AddScoped<SalesApiClient>();
+builder.Services.AddScoped<AuthApiClient>();
 
 
 
@@ -36,6 +40,8 @@ app.UseStaticFiles();
 app.UseSession();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
