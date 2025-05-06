@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using UserService.Domain;
-using UserService.Services;
 using System.Text;
-using UserService.Infrastructure;
+using System.Text.Json;
+using UserService.Domain;
 using UserService.Domain.DTO;
 using UserService.Domain.Mappers;
+using UserService.Infrastructure;
+using UserService.Services;
+using UserService.Services.Notifications;
 using UserService.Utils;
 
 namespace UserService.Controllers
@@ -13,17 +15,19 @@ namespace UserService.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private UsersService _usersService;
+        private readonly UsersService _usersService;
+        private readonly NotificationService _notificationService;
 
-        public UsersController(UserDAO userDAO)
+        public UsersController(UserDAO userDAO, NotificationService notificationService)
         {
             _usersService = new UsersService(userDAO);
+            _notificationService = notificationService;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<User>> GetUsers()
         {
-            return _usersService.GetUsers();
+            return Ok(_usersService.GetUsers());
         }
 
         [HttpGet("{id:int}")]
@@ -32,33 +36,27 @@ namespace UserService.Controllers
             var user = _usersService.GetUserById(id);
             if (user == null)
                 return NotFound();
-            return user;
+            return Ok(user);
         }
-
-
-
-
 
         [HttpPost]
         public ActionResult<UserDTO> CreateUser([FromBody] UserDTO dto)
         {
-            // Validare minimă
+
+            Console.WriteLine($"[CreateUser] Received DTO: {JsonSerializer.Serialize(dto)}");
+
+
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
                 return BadRequest("Email and password are required.");
 
-            // Hash-uim parola și construim modelul User
             var user = UserMapper.FromDTO(dto, HashHelper.HashPassword(dto.Password));
-
             var result = _usersService.InsertUser(user);
+
             if (!result)
                 return BadRequest("Insert failed.");
 
             return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, UserMapper.ToDTO(user));
         }
-
-
-
-
 
         [HttpPut]
         public ActionResult UpdateUser([FromBody] UserDTO dto)
@@ -72,33 +70,31 @@ namespace UserService.Controllers
                 : HashHelper.HashPassword(dto.Password);
 
             var user = UserMapper.FromDTO(dto, hashToUse);
-
             bool result = _usersService.UpdateUser(user);
-            return result ? Ok() : BadRequest("Update failed.");
+
+            if (result)
+            {
+                _notificationService.NotifyByEmail(user.Email, "Contul tău a fost modificat.");
+                _notificationService.NotifyBySms(user.Phone, "Contul tău a fost modificat.");
+                return Ok("User updated and notified.");
+            }
+
+            return BadRequest("Update failed.");
         }
-
-
-
 
         [HttpDelete("{id:int}")]
         public ActionResult DeleteUser(int id)
         {
             bool result = _usersService.DeleteUser(id);
-            if (result)
-                return Ok();
-            return BadRequest();
+            return result ? Ok("User deleted.") : BadRequest("Delete failed.");
         }
-
-
-
 
         [HttpGet("filterByRole")]
         public ActionResult<IEnumerable<User>> FilterUsersByRole([FromQuery] string role)
         {
-            return _usersService.FilterUsersByRole(role);
+            var users = _usersService.FilterUsersByRole(role);
+            return Ok(users);
         }
-
-
 
         [HttpGet("export/csv")]
         public IActionResult ExportUsersCsv()
@@ -108,15 +104,10 @@ namespace UserService.Controllers
             builder.AppendLine("Id,Name,Role,Phone");
 
             foreach (var user in users)
-            {
                 builder.AppendLine($"{user.Id},{user.Name},{user.Role},{user.Phone}");
-            }
 
             return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "users.csv");
         }
-
-
-
 
         [HttpPost("login")]
         public ActionResult<UserDTO> LogIn([FromBody] UserLoginDTO dto)
@@ -132,7 +123,5 @@ namespace UserService.Controllers
 
             return Ok(UserMapper.ToDTO(user));
         }
-
-
     }
 }

@@ -20,6 +20,21 @@ namespace GalleryFrontend.Controllers
 
 
 
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View(); 
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View(); 
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
@@ -40,11 +55,12 @@ namespace GalleryFrontend.Controllers
 
             return user.Role switch
             {
-                "Employee" => RedirectToAction("EmployeeIndex", "Artworks"),
+                "Employee" => RedirectToAction("Index", "Employee"),
                 "Manager" => RedirectToAction("Index", "Manager"),
                 "Admin" => RedirectToAction("Index", "Admin"),
                 _ => RedirectToAction("Index", "Home")
             };
+
         }
 
 

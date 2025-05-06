@@ -1,6 +1,42 @@
-﻿namespace GalleryFrontend.Views.Sales
+﻿@model List<GalleryFrontend.Models.SaleModel>
+@{
+	ViewData["Title"] = "Sales Overview";
+	var total = ViewBag.Total ?? 0.0;
+}
+
+<h2 class="text-center mt-3">Sales</h2>
+
+<div class="mb-4 text-end">
+	<h5>Total Sales Value: <span class="badge bg-success">@total €</span></h5>
+</div>
+
+@if (!Model.Any())
 {
-    public class Index
-    {
-    }
+	<div class="alert alert-info">No sales recorded yet.</div>
+}
+else
+{
+	<table class="table table-striped table-bordered">
+		<thead>
+		<tr>
+			<th>Sale ID</th>
+			<th>Artwork Title</th>
+			<th>Employee Name</th>
+			<th>Sale Date</th>
+			<th>Price</th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var sale in Model)
+		{
+			<tr>
+				<td>@sale.Id</td>
+				<td>@sale.ArtworkTitle</td>
+				<td>@sale.EmployeeName</td>
+				<td>@sale.SaleDate.ToString("yyyy-MM-dd")</td>
+				<td>@sale.Price €</td>
+			</tr>
+		}
+		</tbody>
+	</table>
 }

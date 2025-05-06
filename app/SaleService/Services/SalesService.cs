@@ -12,6 +12,13 @@ namespace SaleService.Services
             this._saleDAO = saleDAO;
         }
 
+
+        public List<Sale> GetAllSales()
+        {
+            return _saleDAO.GetAllSales();
+        }
+
+
         public bool SellArtwork(Sale sale)
         {
             if (sale == null)

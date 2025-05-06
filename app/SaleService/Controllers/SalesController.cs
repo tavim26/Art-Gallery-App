@@ -16,6 +16,16 @@ namespace SaleService.Controllers
             _salesService = salesService;
         }
 
+
+        [HttpGet]
+        public ActionResult<List<SaleDTO>> GetAll()
+        {
+            var sales = _salesService.GetAllSales();
+            var dtos = sales.Select(s => SaleMapper.ToDTO(s)).ToList();
+            return Ok(dtos);
+        }
+
+
         [HttpPost]
         public ActionResult SellArtwork([FromBody] SaleDTO dto)
         {

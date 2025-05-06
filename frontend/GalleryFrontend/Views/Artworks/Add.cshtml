@@ -44,7 +44,7 @@
         <select asp-for="YearCreated" class="form-select" required>
             @{
                 var currentYear = DateTime.Now.Year;
-                for (int year = currentYear; year >= 1900; year--)
+                for (int year = currentYear; year >= 1300; year--)
                 {
                     <option value="@year">@year</option>
                 }
@@ -54,7 +54,7 @@
 
     <div class="mb-3">
         <label class="form-label">Price</label>
-        <input asp-for="Price" class="form-control" type="number" min="10000" max="50000" required />
+        <input asp-for="Price" class="form-control" type="number" min="100000" max="1500000" step="10000" required />
     </div>
 
     <button type="submit" class="btn btn-success">Save</button>

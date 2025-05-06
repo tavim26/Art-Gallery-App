@@ -7,10 +7,25 @@ namespace SaleService.Infrastructure
 {
     public class SaleDAO : DbContext, ISaleDAO
     {
-        private DbSet<SaleEntity> _salesSet { get; set; }
+        // EF Core va inițializa automat acest DbSet
+        public DbSet<SaleEntity> Sales { get; set; }
 
         public SaleDAO(DbContextOptions<SaleDAO> options)
             : base(options) { }
+
+
+        public List<Sale> GetAllSales()
+        {
+            try
+            {
+                return Sales.Select(s => s.ToSale()).ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return new List<Sale>();
+            }
+        }
 
         public bool InsertSale(Sale sale)
         {
@@ -18,29 +33,37 @@ namespace SaleService.Infrastructure
                 return false;
             try
             {
-                _salesSet.Add(new SaleEntity(sale));
+                Sales.Add(new SaleEntity(sale));
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                // Înlocuiește cu ILogger în varianta finală
+                Console.WriteLine($"Eroare la inserare vânzare: {ex.Message}");
                 return false;
             }
         }
-
 
         public double GetTotalSalesAmount()
         {
             try
             {
-                if (_salesSet == null || !_salesSet.Any())
+                if (Sales == null || !Sales.Any())
                     return 0.0;
 
-                return _salesSet.Sum(s => s.Price);
+                return Sales.Sum(s => s.Price);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Eroare la calcul total vânzări: {ex.Message}");
                 return 0.0;
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<SaleEntity>().ToTable("SALE");
         }
     }
 }

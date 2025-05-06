@@ -21,6 +21,8 @@ builder.Services.AddScoped<GalleryFrontend.Models.Services.ArtistApiClient>();
 builder.Services.AddScoped<GalleryFrontend.Services.ArtworksApiClient>();
 builder.Services.AddScoped<SalesApiClient>();
 builder.Services.AddScoped<AuthApiClient>();
+builder.Services.AddHttpClient<UsersApiClient>();
+
 
 
 

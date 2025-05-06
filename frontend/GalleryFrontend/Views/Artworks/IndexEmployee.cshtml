@@ -87,10 +87,10 @@
 
                     <a class="btn btn-sm btn-warning" href="@Url.Action("AddImage", "Artworks", new { artworkId = artwork.Id })">Add Image</a>
 
+	                <form asp-controller="Sales" asp-action="Sell" asp-route-id="@artwork.Id" method="post" class="d-inline">
+		                <button type="submit" class="btn btn-sm btn-success">Sell</button>
+	                </form>
 
-                    <form asp-action="Sell" asp-route-id="@artwork.Id" method="post" class="d-inline">
-	                    <button type="submit" class="btn btn-sm btn-success">Sell</button>
-                    </form>
 
                     <a class="btn btn-sm btn-info" href="@Url.Action("ViewImages", "Artworks", new { artworkId = artwork.Id })">View Images</a>
                 </td>

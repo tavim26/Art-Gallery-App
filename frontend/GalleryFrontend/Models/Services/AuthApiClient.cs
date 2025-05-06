@@ -30,11 +30,15 @@ namespace GalleryFrontend.Models.Services
 
         public async Task<bool> RegisterAsync(UserModel model)
         {
-            var json = JsonSerializer.Serialize(model, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var json = JsonSerializer.Serialize(model);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var res = await _http.PostAsync("users", content);
+            var responseText = await res.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"[RegisterAsync] Status: {res.StatusCode}, Response: {responseText}");
             return res.IsSuccessStatusCode;
         }
+
     }
 }
