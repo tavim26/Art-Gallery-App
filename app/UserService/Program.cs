@@ -1,8 +1,8 @@
-using UserService.Infrastructure;
+﻿using UserService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using UserService.Services.Notifications;
 using UserService.Services;
-
+using UserService.Domain.Contracts;
 var builder = WebApplication.CreateBuilder(args);
 
 // DB Context
@@ -10,11 +10,15 @@ builder.Services.AddDbContext<UserDAO>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// Register notification strategies
+// Adăugăm legătura dintre interfață și implementare
+builder.Services.AddScoped<IUserDAO, UserDAO>();
+
+// UsersService
+builder.Services.AddScoped<UsersService>();
+
+// Notification strategies
 builder.Services.AddSingleton<INotificationStrategy, EmailNotificationStrategy>();
 builder.Services.AddSingleton<INotificationStrategy, SmsNotificationStrategy>();
-
-// Register NotificationService (Strategy context)
 builder.Services.AddSingleton<NotificationService>(provider =>
 {
     var config = provider.GetRequiredService<IConfiguration>();

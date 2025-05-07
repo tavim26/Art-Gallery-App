@@ -18,9 +18,9 @@ namespace UserService.Controllers
         private readonly UsersService _usersService;
         private readonly NotificationService _notificationService;
 
-        public UsersController(UserDAO userDAO, NotificationService notificationService)
+        public UsersController(UsersService usersService, NotificationService notificationService)
         {
-            _usersService = new UsersService(userDAO);
+            _usersService = usersService;
             _notificationService = notificationService;
         }
 
