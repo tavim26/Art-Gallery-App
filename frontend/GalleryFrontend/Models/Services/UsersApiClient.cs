@@ -51,21 +51,19 @@ namespace GalleryFrontend.Models.Services
 
         public async Task<bool> UpdateUserAsync(UserModel user)
         {
-            var dto = new
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Role = user.Role,
-                Phone = user.Phone,
-                Password = "" // trimite parolă goală => backend o va păstra pe cea veche
-            };
+            Console.WriteLine($"[API CLIENT] Preparing to update user: Id={user.Id}, Name={user.Name}, Email={user.Email}");
 
-            var json = JsonSerializer.Serialize(dto);
+            var json = JsonSerializer.Serialize(user);
+            Console.WriteLine($"[API CLIENT] Payload JSON: {json}");
+
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var res = await _client.PutAsync("users", content);
+
+            Console.WriteLine($"[API CLIENT] Status code: {res.StatusCode}");
             return res.IsSuccessStatusCode;
         }
+
+
 
 
 

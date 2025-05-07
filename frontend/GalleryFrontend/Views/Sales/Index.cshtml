@@ -24,6 +24,7 @@ else
 			<th>Employee Name</th>
 			<th>Sale Date</th>
 			<th>Price</th>
+			<th>Actions</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -35,6 +36,11 @@ else
 				<td>@sale.EmployeeName</td>
 				<td>@sale.SaleDate.ToString("yyyy-MM-dd")</td>
 				<td>@sale.Price €</td>
+				
+				<td>
+				<a asp-action="Download" asp-route-id="@sale.Id" class="btn btn-sm btn-outline-primary">
+					Download PDF
+				</a>
 			</tr>
 		}
 		</tbody>

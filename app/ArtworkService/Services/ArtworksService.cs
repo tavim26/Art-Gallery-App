@@ -1,5 +1,7 @@
 ﻿using ArtworkService.Domain;
 using ArtworkService.Domain.Contracts;
+using ArtworkService.Domain.DTO;
+using ArtworkService.Services.Exports;
 
 namespace ArtworkService.Services
 {
@@ -106,6 +108,68 @@ namespace ArtworkService.Services
 
             return _artworkDAO.GetArtworkImages(artworkId);
         }
-    }
+
+
+        public (byte[] content, string contentType, string fileName)? ExportArtworks(string format)
+        {
+            var artworks = GetArtworks()
+                .Select(art => new ArtworkDTO
+                {
+                    Id = art.Id,
+                    Title = art.Title,
+                    YearCreated = art.YearCreated,
+                    Type = art.Type,
+                    ArtistId = art.ArtistId,
+                    Price = art.Price
+                })
+                .ToList();
+
+            IExportStrategy? strategy = format?.ToLower() switch
+            {
+                "csv" => new CsvExportStrategy(),
+                "json" => new JsonExportStrategy(),
+                "xml" => new XmlExportStrategy(),
+                _ => null
+            };
+
+            if (strategy == null)
+                return null;
+
+            var result = strategy.Export(artworks);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(result);
+            var fileName = $"artworks_{DateTime.Now:yyyyMMdd_HHmmss}{strategy.FileExtension}";
+
+            return (bytes, strategy.ContentType, fileName);
+        }
+
+
+
+
+        public List<ArtworkStatsDTO> GetStatsByType()
+        {
+            return _artworkDAO.ListArtworks()
+                .GroupBy(a => a.Type)
+                .Select(g => new ArtworkStatsDTO
+                {
+                    Label = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+        }
+
+        public List<ArtworkStatsDTO> GetStatsByArtist()
+        {
+            return _artworkDAO.ListArtworks()
+                .GroupBy(a => a.ArtistId.ToString()) // rămâne ID, simplu
+                .Select(g => new ArtworkStatsDTO
+                {
+                    Label = $"Artist {g.Key}",
+                    Count = g.Count()
+                })
+                .ToList();
+        }
+
+
+}
 
 }

@@ -17,8 +17,10 @@ namespace ArtistService.Infrastructure
             {
                 return Artists.Select(a => a.ToArtist()).ToList();
             }
-            catch
-            {
+            catch(Exception ex) {
+            
+                Console.WriteLine($"[GetArtists] Failed to retrieve artists: {ex.Message}");
+
                 return new List<Artist>();
             }
         }
@@ -30,7 +32,7 @@ namespace ArtistService.Infrastructure
                 var artistEntity = Artists.FirstOrDefault(a => a.Id == id);
                 return artistEntity?.ToArtist();
             }
-            catch
+            catch (Exception ex)
             {
                 return null;
             }
@@ -45,8 +47,10 @@ namespace ArtistService.Infrastructure
                 Artists.Add(new ArtistEntity(artist));
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtist] Failed to insert artist: {ex.Message}");
+
                 return false;
             }
         }
@@ -68,8 +72,10 @@ namespace ArtistService.Infrastructure
 
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[UpdateArtist] Failed to update artist with ID {artist.Id}: {ex.Message}");
+
                 return false;
             }
         }
@@ -84,8 +90,10 @@ namespace ArtistService.Infrastructure
                 Artists.Remove(artist);
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[DeleteArtist] Failed to delete artist with ID {id}: {ex.Message}");
+
                 return false;
             }
         }
@@ -99,8 +107,10 @@ namespace ArtistService.Infrastructure
                     .Select(a => a.ToArtist())
                     .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[SearchArtistsByName] Failed to search artists by name '{name}': {ex.Message}");
+
                 return new List<Artist>();
             }
         }

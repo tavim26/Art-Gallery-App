@@ -23,23 +23,29 @@ namespace GalleryFrontend.Controllers
             var sales = await _salesApi.GetSalesAsync();
             var total = await _salesApi.GetTotalSalesAsync();
 
-            foreach (var sale in sales)
-            {
-                var artwork = await _artworksApi.GetArtworkAsync(sale.ArtworkId);
-                var employee = await _usersApi.GetUserAsync(sale.EmployeeId);
-
-                sale.ArtworkTitle = artwork?.Title ?? "Unknown";
-                sale.EmployeeName = employee?.Name ?? "Unknown";
-            }
+            await EnrichSalesAsync(sales);
 
             ViewBag.Total = total;
             return View(sales);
         }
 
+        private async Task EnrichSalesAsync(List<SaleModel> sales)
+        {
+            foreach (var sale in sales)
+            {
+                var artworkTask = _artworksApi.GetArtworkAsync(sale.ArtworkId);
+                var employeeTask = _usersApi.GetUserAsync(sale.EmployeeId);
+
+                await Task.WhenAll(artworkTask, employeeTask);
+
+                sale.ArtworkTitle = artworkTask.Result?.Title ?? "Unknown";
+                sale.EmployeeName = employeeTask.Result?.Name ?? "Unknown";
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Sell(int id)
         {
-            // 1. Obține ID-ul userului logat
             int? employeeId = HttpContext.Session.GetInt32("UserId");
             if (employeeId == null)
             {
@@ -47,24 +53,13 @@ namespace GalleryFrontend.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            // 2. Obține detaliile operei de artă
-            var artwork = await _artworksApi.GetArtworkAsync(id);
-            if (artwork == null)
+            var sale = await BuildSaleAsync(id, employeeId.Value);
+            if (sale == null)
             {
                 TempData["Error"] = "Artwork not found.";
                 return RedirectToAction("EmployeeIndex", "Artworks");
             }
 
-            // 3. Construiește vânzarea
-            var sale = new SaleModel
-            {
-                ArtworkId = artwork.Id,
-                EmployeeId = employeeId.Value,
-                SaleDate = DateTime.Now,
-                Price = artwork.Price
-            };
-
-            // 4. Trimite vânzarea către backend
             var success = await _salesApi.SellArtworkAsync(sale);
             if (!success)
                 TempData["Error"] = "Sale failed.";
@@ -72,6 +67,28 @@ namespace GalleryFrontend.Controllers
             return RedirectToAction("EmployeeIndex", "Artworks");
         }
 
+        private async Task<SaleModel?> BuildSaleAsync(int artworkId, int employeeId)
+        {
+            var artwork = await _artworksApi.GetArtworkAsync(artworkId);
+            if (artwork == null)
+                return null;
+
+            return new SaleModel
+            {
+                ArtworkId = artwork.Id,
+                EmployeeId = employeeId,
+                SaleDate = DateTime.Now,
+                Price = artwork.Price
+            };
+        }
+
+
+        public async Task<IActionResult> Download(int id)
+        {
+            var pdfBytes = await _salesApi.DownloadSalePdfAsync(id);
+            return File(pdfBytes, "application/pdf", $"sale_{id}.pdf");
+        }
 
     }
+
 }

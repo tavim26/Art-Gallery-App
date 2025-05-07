@@ -18,8 +18,10 @@ namespace ArtworkService.Infrastructure
             {
                 return Artworks.Select(a => a.ToArtwork()).ToList();
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error listing artwork: {ex.Message}");
+
                 return new List<Artwork>();
             }
         }
@@ -32,8 +34,9 @@ namespace ArtworkService.Infrastructure
                 var entity = Artworks.Find(id);
                 return entity?.ToArtwork();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error geting by id artwork: {ex.Message}");
                 return null;
             }
         }
@@ -48,8 +51,9 @@ namespace ArtworkService.Infrastructure
                 Artworks.Add(new ArtworkEntity(artwork));
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error inserting artwork: {ex.Message}");
                 return false;
             }
         }
@@ -72,8 +76,9 @@ namespace ArtworkService.Infrastructure
 
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error updating artwork: {ex.Message}");
                 return false;
             }
         }
@@ -88,8 +93,9 @@ namespace ArtworkService.Infrastructure
                 Artworks.Remove(entity);
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error deleting artwork: {ex.Message}");
                 return false;
             }
         }
@@ -104,8 +110,9 @@ namespace ArtworkService.Infrastructure
                     .Select(a => a.ToArtwork())
                     .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error searching artwork: {ex.Message}");
                 return new List<Artwork>();
             }
         }
@@ -120,8 +127,9 @@ namespace ArtworkService.Infrastructure
                     .Select(a => a.ToArtwork())
                     .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error filtering artwork: {ex.Message}");
                 return new List<Artwork>();
             }
         }
@@ -136,8 +144,9 @@ namespace ArtworkService.Infrastructure
                     .Select(a => a.ToArtwork())
                     .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error filtering artwork: {ex.Message}");
                 return new List<Artwork>();
             }
         }
@@ -152,8 +161,9 @@ namespace ArtworkService.Infrastructure
                     .Select(a => a.ToArtwork())
                     .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error filtering artwork: {ex.Message}");
                 return new List<Artwork>();
             }
         }
@@ -167,8 +177,9 @@ namespace ArtworkService.Infrastructure
                     .Select(img => img.ToArtworkImage())
                     .ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error getting artwork images: {ex.Message}");
                 return new List<ArtworkImage>();
             }
         }

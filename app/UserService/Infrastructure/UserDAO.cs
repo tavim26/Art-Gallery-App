@@ -78,16 +78,29 @@ namespace UserService.Infrastructure
         {
             if (user == null)
                 return false;
+
             try
             {
-                _usersSet.Update(new UserEntity(user));
+                var existingEntity = _usersSet.FirstOrDefault(u => u.Id == user.Id);
+                if (existingEntity == null)
+                    return false;
+
+                // Actualizează doar câmpurile necesare
+                existingEntity.Name = user.Name;
+                existingEntity.Email = user.Email;
+                existingEntity.Phone = user.Phone;
+                existingEntity.Role = user.Role;
+                existingEntity.PasswordHash = user.PasswordHash;
+
                 return SaveChanges() > 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine("[UPDATE ERROR] " + ex.Message);
                 return false;
             }
         }
+
 
         public bool DeleteUser(int id)
         {

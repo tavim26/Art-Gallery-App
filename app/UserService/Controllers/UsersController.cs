@@ -61,6 +61,9 @@ namespace UserService.Controllers
         [HttpPut]
         public ActionResult UpdateUser([FromBody] UserDTO dto)
         {
+
+            Console.WriteLine($"[BACKEND] Received PUT for user ID={dto.Id}, Name={dto.Name}, Email={dto.Email}, Password='{dto.Password}'");
+
             var existing = _usersService.GetUserById(dto.Id);
             if (existing == null)
                 return NotFound("User not found.");

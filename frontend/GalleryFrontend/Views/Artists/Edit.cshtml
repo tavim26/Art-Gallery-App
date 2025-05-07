@@ -55,7 +55,7 @@
 
         const reader = new FileReader();
         reader.onload = function (e) {
-            // setăm conținutul în hidden input
+            
             document.getElementById("photoBase64").value = e.target.result.split(",")[1];
         };
         reader.readAsDataURL(file);

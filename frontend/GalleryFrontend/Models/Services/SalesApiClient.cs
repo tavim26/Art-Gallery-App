@@ -24,6 +24,7 @@ namespace GalleryFrontend.Models.Services
             return response.IsSuccessStatusCode;
         }
 
+
         public async Task<List<SaleModel>> GetSalesAsync()
         {
             var res = await _client.GetAsync("sales");
@@ -36,6 +37,7 @@ namespace GalleryFrontend.Models.Services
             }) ?? new List<SaleModel>();
         }
 
+
         public async Task<double> GetTotalSalesAsync()
         {
             var res = await _client.GetAsync("sales/totalSalesAmount");
@@ -44,5 +46,14 @@ namespace GalleryFrontend.Models.Services
             var json = await res.Content.ReadAsStringAsync();
             return double.TryParse(json, out var val) ? val : 0.0;
         }
+
+
+
+        public async Task<byte[]> DownloadSalePdfAsync(int id)
+        {
+            var res = await _client.GetAsync($"sales/{id}/pdf");
+            return await res.Content.ReadAsByteArrayAsync();
+        }
+
     }
 }

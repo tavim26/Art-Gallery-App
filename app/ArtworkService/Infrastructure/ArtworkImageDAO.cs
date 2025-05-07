@@ -24,8 +24,9 @@ namespace ArtworkService.Infrastructure
                 ArtworkImages.Add(new ArtworkImageEntity(image));
                 return SaveChanges() > 0;
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error inserting artwork images: {ex.Message}");
                 return false;
             }
         }
@@ -44,8 +45,9 @@ namespace ArtworkService.Infrastructure
                     .Select(img => img.ToArtworkImage())
                     .ToList();
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine($"[InsertArtwork] Error getting artwork images: {ex.Message}");
                 return new List<ArtworkImage>();
             }
         }

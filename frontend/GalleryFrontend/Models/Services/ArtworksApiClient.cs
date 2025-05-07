@@ -1,5 +1,6 @@
 ﻿// GalleryFrontend/Services/ArtworksApiClient.cs
 using GalleryFrontend.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -90,6 +91,15 @@ namespace GalleryFrontend.Services
         }
 
 
+        public async Task<byte[]> ExportXmlAsync()
+        {
+            var res = await _client.GetAsync("artworks/export/xml");
+            return await res.Content.ReadAsByteArrayAsync();
+        }
+
+
+
+
         public async Task<bool> AddArtworkImageAsync(ArtworkImageModel model)
         {
             var json = JsonSerializer.Serialize(model);
@@ -97,6 +107,24 @@ namespace GalleryFrontend.Services
             var res = await _client.PostAsync("artworkimages", content);
             return res.IsSuccessStatusCode;
         }
+
+
+        public async Task<List<ArtworkStatsModel>> GetStatsByTypeAsync()
+        {
+            var res = await _client.GetAsync("artworks/stats/byType");
+            if (!res.IsSuccessStatusCode) return new();
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<ArtworkStatsModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+        }
+
+        public async Task<List<ArtworkStatsModel>> GetStatsByArtistAsync()
+        {
+            var res = await _client.GetAsync("artworks/stats/byArtist");
+            if (!res.IsSuccessStatusCode) return new();
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<ArtworkStatsModel>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+        }
+
 
     }
 }

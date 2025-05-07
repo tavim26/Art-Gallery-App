@@ -38,15 +38,14 @@ namespace GalleryFrontend.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(UserModel model)
         {
+            Console.WriteLine($"[EDIT] User Id={model.Id}, Name={model.Name}, Email={model.Email}");
+
             if (!ModelState.IsValid)
                 return View(model);
 
-            var existing = await _usersApi.GetUserAsync(model.Id);
-            if (existing == null) return NotFound();
-
-            model.PasswordHash = existing.PasswordHash;
-
             bool success = await _usersApi.UpdateUserAsync(model);
+            Console.WriteLine($"[EDIT] Update success: {success}");
+
             if (!success)
             {
                 ViewBag.Error = "Update failed.";
@@ -55,6 +54,7 @@ namespace GalleryFrontend.Controllers
 
             return RedirectToAction("Index");
         }
+
 
 
         [HttpGet]

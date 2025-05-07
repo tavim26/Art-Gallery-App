@@ -97,29 +97,31 @@ namespace ArtworkService.Controllers
             return Ok(artworks);
         }
 
-        [HttpGet("export/csv")]
-        public IActionResult ExportArtworksCsv()
+        [HttpGet("export/{format}")]
+        public IActionResult Export(string format)
         {
-            var artworks = _artworksService.GetArtworks();
-            var builder = new StringBuilder();
-            builder.AppendLine("Id,Title,YearCreated,Type,ArtistId,Price");
+            var exportResult = _artworksService.ExportArtworks(format);
+            if (exportResult == null)
+                return BadRequest("Invalid export format.");
 
-            foreach (var artwork in artworks)
-            {
-                builder.AppendLine($"{artwork.Id},{artwork.Title},{artwork.YearCreated},{artwork.Type},{artwork.ArtistId},{artwork.Price}");
-            }
-
-            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "artworks.csv");
+            return File(exportResult.Value.content, exportResult.Value.contentType, exportResult.Value.fileName);
         }
 
-        [HttpGet("export/json")]
-        public IActionResult ExportArtworksJson()
+
+
+        [HttpGet("stats/byType")]
+        public ActionResult<List<ArtworkStatsDTO>> GetByTypeStats()
         {
-            var artworks = _artworksService.GetArtworks();
-            var json = JsonSerializer.Serialize(artworks);
-            return File(Encoding.UTF8.GetBytes(json), "application/json", "artworks.json");
+            return Ok(_artworksService.GetStatsByType());
         }
 
-      
+        [HttpGet("stats/byArtist")]
+        public ActionResult<List<ArtworkStatsDTO>> GetByArtistStats()
+        {
+            return Ok(_artworksService.GetStatsByArtist());
+        }
+
+
+
     }
 }

@@ -11,7 +11,8 @@
     <div class="alert alert-danger">@ViewBag.Error</div>
 }
 
-<form asp-action="Edit" method="post" class="mt-4">
+<form asp-controller="Users" asp-action="Edit" method="post" class="mt-4">
+
     <input type="hidden" asp-for="Id" />
 
     <div class="mb-3">

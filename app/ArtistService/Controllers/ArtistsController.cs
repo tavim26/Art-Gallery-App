@@ -1,5 +1,4 @@
-﻿using ArtistService.Domain;
-using ArtistService.Domain.DTO;
+﻿using ArtistService.Domain.DTO;
 using ArtistService.Domain.Mappers;
 using ArtistService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +16,7 @@ namespace ArtistService.Controllers
             _artistsService = artistsService;
         }
 
+
         [HttpGet]
         public ActionResult<IEnumerable<ArtistDTO>> GetArtists()
         {
@@ -26,6 +26,8 @@ namespace ArtistService.Controllers
 
             return Ok(artists);
         }
+
+
 
         [HttpGet("{id:int}")]
         public ActionResult<ArtistDTO> GetArtistById(int id)
@@ -47,7 +49,6 @@ namespace ArtistService.Controllers
             if (string.IsNullOrWhiteSpace(dto.Name))
                 return BadRequest("Name is required.");
 
-            // Dacă nu se trimite poză, inițializează cu string gol
             if (dto.Photo == null)
                 dto.Photo = "";
 
@@ -89,6 +90,8 @@ namespace ArtistService.Controllers
             return result ? Ok() : BadRequest();
         }
 
+
+
         [HttpGet("searchByName")]
         public ActionResult<IEnumerable<ArtistDTO>> SearchArtistsByName([FromQuery] string name)
         {
@@ -98,6 +101,8 @@ namespace ArtistService.Controllers
 
             return Ok(artists);
         }
+
+
 
         [HttpGet("photo/{id:int}")]
         public ActionResult<string> GetArtistPhoto(int id)

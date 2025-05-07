@@ -67,13 +67,13 @@ namespace GalleryFrontend.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Register(string name, string email, string passwordHash, string role, string phone)
+        public async Task<IActionResult> Register(string name, string email, string password, string role, string phone)
         {
             var user = new UserModel
             {
                 Name = name,
                 Email = email,
-                PasswordHash = passwordHash,
+                Password = password,
                 Role = role,
                 Phone = phone
             };

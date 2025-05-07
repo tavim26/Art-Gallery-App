@@ -137,6 +137,14 @@ namespace GalleryFrontend.Controllers
         }
 
 
+        public async Task<IActionResult> ExportXml()
+        {
+            var bytes = await _api.ExportXmlAsync();
+            return File(bytes, "application/xml", "artworks.xml");
+        }
+
+
+
 
         [HttpGet]
         public IActionResult AddImage(int artworkId)
@@ -155,6 +163,28 @@ namespace GalleryFrontend.Controllers
             }
 
             return RedirectToAction("ViewImages", new { artworkId = model.ArtworkId });
+        }
+
+
+
+        public async Task<IActionResult> Stats()
+        {
+            var byType = await _api.GetStatsByTypeAsync();
+            var byArtist = await _api.GetStatsByArtistAsync();
+            var artists = await _artistsApi.GetArtistsAsync();
+
+            // Înlocuiește ID-urile cu numele artiștilor
+            foreach (var item in byArtist)
+            {
+                if (int.TryParse(item.Label.Replace("Artist ", ""), out int artistId))
+                {
+                    var artist = artists.FirstOrDefault(a => a.Id == artistId);
+                    if (artist != null)
+                        item.Label = artist.Name;
+                }
+            }
+
+            return View((byType, byArtist));
         }
 
 

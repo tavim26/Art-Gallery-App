@@ -37,11 +37,27 @@ namespace SaleService.Controllers
             return result ? Ok() : BadRequest("Could not process sale.");
         }
 
+
+
         [HttpGet("totalSalesAmount")]
         public ActionResult<double> GetTotalSalesAmount()
         {
             var total = _salesService.GetTotalSalesAmount();
             return Ok(total);
         }
+
+
+
+        [HttpGet("{id}/pdf")]
+        public IActionResult ExportSalePdf(int id)
+        {
+            var sale = _salesService.GetAllSales().FirstOrDefault(s => s.Id == id);
+            if (sale == null)
+                return NotFound("Sale not found.");
+
+            var pdfBytes = PdfGenerator.GenerateSalePdf(sale);
+            return File(pdfBytes, "application/pdf", $"sale_{id}.pdf");
+        }
+
     }
 }
