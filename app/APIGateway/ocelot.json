@@ -92,18 +92,7 @@
         }
       ]
     },
-    {
-      "UpstreamHttpMethod": [ "Put" ],
-      "UpstreamPathTemplate": "/users/",
-      "DownstreamPathTemplate": "/api/Users/",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5128
-        }
-      ]
-    },
+
     {
       "UpstreamHttpMethod": [ "Get", "Post" ],
       "UpstreamPathTemplate": "/notification/{everything}",

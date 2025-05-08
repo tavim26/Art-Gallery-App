@@ -1,6 +1,7 @@
 ﻿using GalleryFrontend.Models;
 using GalleryFrontend.Models.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace GalleryFrontend.Controllers
 {
@@ -32,19 +33,26 @@ namespace GalleryFrontend.Controllers
         {
             var user = await _usersApi.GetUserAsync(id);
             if (user == null) return NotFound();
+
+            user.Password = ""; 
+
             return View(user);
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Edit(UserModel model)
         {
-            Console.WriteLine($"[EDIT] User Id={model.Id}, Name={model.Name}, Email={model.Email}");
-
+            
             if (!ModelState.IsValid)
+            {
+               
                 return View(model);
+            }
 
             bool success = await _usersApi.UpdateUserAsync(model);
-            Console.WriteLine($"[EDIT] Update success: {success}");
 
             if (!success)
             {
@@ -54,6 +62,9 @@ namespace GalleryFrontend.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+
 
 
 

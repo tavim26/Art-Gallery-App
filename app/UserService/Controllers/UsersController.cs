@@ -43,7 +43,6 @@ namespace UserService.Controllers
         public ActionResult<UserDTO> CreateUser([FromBody] UserDTO dto)
         {
 
-            Console.WriteLine($"[CreateUser] Received DTO: {JsonSerializer.Serialize(dto)}");
 
 
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
@@ -61,29 +60,25 @@ namespace UserService.Controllers
         [HttpPut]
         public ActionResult UpdateUser([FromBody] UserDTO dto)
         {
-
-            Console.WriteLine($"[BACKEND] Received PUT for user ID={dto.Id}, Name={dto.Name}, Email={dto.Email}, Password='{dto.Password}'");
-
             var existing = _usersService.GetUserById(dto.Id);
             if (existing == null)
                 return NotFound("User not found.");
 
-            string hashToUse = string.IsNullOrWhiteSpace(dto.Password)
-                ? existing.PasswordHash
-                : HashHelper.HashPassword(dto.Password);
+           
+            var user = UserMapper.FromDTO(dto, existing.PasswordHash);
 
-            var user = UserMapper.FromDTO(dto, hashToUse);
             bool result = _usersService.UpdateUser(user);
 
             if (result)
             {
-                _notificationService.NotifyByEmail(user.Email, "Contul tău a fost modificat.");
-                _notificationService.NotifyBySms(user.Phone, "Contul tău a fost modificat.");
+                _notificationService.NotifyByEmail(user.Email, "Your account details have been modified.");
+                _notificationService.NotifyBySms(user.Phone, "Your account details have been modified.");
                 return Ok("User updated and notified.");
             }
 
             return BadRequest("Update failed.");
         }
+
 
         [HttpDelete("{id:int}")]
         public ActionResult DeleteUser(int id)
