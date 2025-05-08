@@ -1,5 +1,7 @@
-﻿using UserService.Domain;
+﻿using System.Text;
+using UserService.Domain;
 using UserService.Domain.Contracts;
+using UserService.Services.Exports;
 
 namespace UserService.Services
 {
@@ -31,8 +33,13 @@ namespace UserService.Services
                 || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.PasswordHash))
                 return false;
 
+            var existing = _userDAO.GetUserByEmail(user.Email);
+            if (existing != null)
+                return false;
+
             return _userDAO.InsertUser(user);
         }
+
 
         public bool UpdateUser(User user)
         {
@@ -62,11 +69,34 @@ namespace UserService.Services
             return _userDAO.GetUserByEmail(email);
         }
 
-        public User? LogIn(string email, string passwordHash)
+        public (User? user, string error)? TryLogIn(string email, string passwordHash)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(passwordHash))
-                return null;
-            return _userDAO.LogIn(email, passwordHash);
+                return (null, "Email and password are required.");
+
+            var existingUser = _userDAO.GetUserByEmail(email);
+            if (existingUser == null)
+                return (null, "No account found with this email.");
+
+            if (existingUser.PasswordHash != passwordHash)
+                return (null, "Incorrect password.");
+
+            return (existingUser, "");
         }
+
+
+
+        public (byte[] content, string contentType, string fileName) ExportUsersCsv()
+        {
+            var users = GetUsers();
+            var strategy = new CsvExportStrategy();
+            var data = strategy.Export(users);
+            var bytes = Encoding.UTF8.GetBytes(data);
+            var filename = $"users_{DateTime.Now:yyyyMMdd_HHmmss}{strategy.FileExtension}";
+
+            return (bytes, strategy.ContentType, filename);
+        }
+
+
     }
 }

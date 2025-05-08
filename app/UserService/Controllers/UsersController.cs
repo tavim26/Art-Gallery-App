@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text;
-using System.Text.Json;
 using UserService.Domain;
 using UserService.Domain.DTO;
 using UserService.Domain.Mappers;
-using UserService.Infrastructure;
 using UserService.Services;
 using UserService.Services.Notifications;
 using UserService.Utils;
@@ -42,20 +40,18 @@ namespace UserService.Controllers
         [HttpPost]
         public ActionResult<UserDTO> CreateUser([FromBody] UserDTO dto)
         {
-
-
-
             if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
                 return BadRequest("Email and password are required.");
 
             var user = UserMapper.FromDTO(dto, HashHelper.HashPassword(dto.Password));
-            var result = _usersService.InsertUser(user);
+            var success = _usersService.InsertUser(user);
 
-            if (!result)
-                return BadRequest("Insert failed.");
+            if (!success)
+                return Conflict("A user with this email already exists.");
 
             return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, UserMapper.ToDTO(user));
         }
+
 
         [HttpPut]
         public ActionResult UpdateUser([FromBody] UserDTO dto)
@@ -64,8 +60,11 @@ namespace UserService.Controllers
             if (existing == null)
                 return NotFound("User not found.");
 
-           
-            var user = UserMapper.FromDTO(dto, existing.PasswordHash);
+            var passwordHash = string.IsNullOrWhiteSpace(dto.Password)
+                ? existing.PasswordHash
+                : HashHelper.HashPassword(dto.Password);
+
+            var user = UserMapper.FromDTO(dto, passwordHash);
 
             bool result = _usersService.UpdateUser(user);
 
@@ -80,12 +79,14 @@ namespace UserService.Controllers
         }
 
 
+
         [HttpDelete("{id:int}")]
         public ActionResult DeleteUser(int id)
         {
             bool result = _usersService.DeleteUser(id);
             return result ? Ok("User deleted.") : BadRequest("Delete failed.");
         }
+
 
         [HttpGet("filterByRole")]
         public ActionResult<IEnumerable<User>> FilterUsersByRole([FromQuery] string role)
@@ -94,32 +95,27 @@ namespace UserService.Controllers
             return Ok(users);
         }
 
+
         [HttpGet("export/csv")]
         public IActionResult ExportUsersCsv()
         {
-            var users = _usersService.GetUsers();
-            var builder = new StringBuilder();
-            builder.AppendLine("Id,Name,Role,Phone");
-
-            foreach (var user in users)
-                builder.AppendLine($"{user.Id},{user.Name},{user.Role},{user.Phone}");
-
-            return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", "users.csv");
+            var export = _usersService.ExportUsersCsv();
+            return File(export.content, export.contentType, export.fileName);
         }
+
+
 
         [HttpPost("login")]
         public ActionResult<UserDTO> LogIn([FromBody] UserLoginDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
-                return BadRequest("Email and password required.");
-
             var hash = HashHelper.HashPassword(dto.Password);
-            var user = _usersService.LogIn(dto.Email, hash);
+            var result = _usersService.TryLogIn(dto.Email, hash);
 
-            if (user == null)
-                return Unauthorized("Invalid credentials.");
+            if (result == null || result.Value.user == null)
+                return Unauthorized(result?.error ?? "Login failed.");
 
-            return Ok(UserMapper.ToDTO(user));
+            return Ok(UserMapper.ToDTO(result.Value.user));
         }
+
     }
 }

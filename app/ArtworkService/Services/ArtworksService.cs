@@ -99,16 +99,6 @@ namespace ArtworkService.Services
             return _artworkDAO.FilterByMaxPrice(maxPrice);
         }
 
-        public List<ArtworkImage> GetArtworkImages(int artworkId)
-        {
-            if (artworkId <= 0)
-            {
-                return new List<ArtworkImage>();
-            }
-
-            return _artworkDAO.GetArtworkImages(artworkId);
-        }
-
 
         public (byte[] content, string contentType, string fileName)? ExportArtworks(string format)
         {
@@ -160,7 +150,7 @@ namespace ArtworkService.Services
         public List<ArtworkStatsDTO> GetStatsByArtist()
         {
             return _artworkDAO.ListArtworks()
-                .GroupBy(a => a.ArtistId.ToString()) // rămâne ID, simplu
+                .GroupBy(a => a.ArtistId.ToString()) 
                 .Select(g => new ArtworkStatsDTO
                 {
                     Label = $"Artist {g.Key}",

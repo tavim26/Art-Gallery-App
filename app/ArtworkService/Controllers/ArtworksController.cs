@@ -15,7 +15,7 @@ namespace ArtworkService.Controllers
     {
         private readonly ArtworksService _artworksService;
 
-        public ArtworksController(ArtworksService artworksService, ArtworkImagesService artworkImagesService)
+        public ArtworksController(ArtworksService artworksService)
         {
             _artworksService = artworksService;
         }

@@ -1,4 +1,4 @@
-﻿namespace UserService.Services.Notifications
+﻿namespace UserService.Domain.Contracts
 {
     public interface INotificationStrategy
     {

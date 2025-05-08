@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SaleService.Domain.Contracts;
 using SaleService.Domain.DTO;
 using SaleService.Domain.Mappers;
 using SaleService.Services;
+using SaleService.Services.Exports;
 
 namespace SaleService.Controllers
 {
@@ -32,7 +34,13 @@ namespace SaleService.Controllers
             if (dto.ArtworkId <= 0 || dto.EmployeeId <= 0 || dto.Price <= 0)
                 return BadRequest("Invalid sale data.");
 
-            var sale = SaleMapper.FromDTO(dto);
+            var sale = SaleService.Domain.Factories.SaleFactory.Create(
+                dto.ArtworkId,
+                dto.EmployeeId,
+                dto.SaleDate,
+                dto.Price
+            );
+
             var result = _salesService.SellArtwork(sale);
             return result ? Ok() : BadRequest("Could not process sale.");
         }
@@ -55,8 +63,11 @@ namespace SaleService.Controllers
             if (sale == null)
                 return NotFound("Sale not found.");
 
-            var pdfBytes = PdfGenerator.GenerateSalePdf(sale);
-            return File(pdfBytes, "application/pdf", $"sale_{id}.pdf");
+            IExportStrategy strategy = new PdfExportStrategy(); 
+
+            var fileBytes = strategy.Export(sale);
+            return File(fileBytes, strategy.GetMimeType(), $"sale_{id}.{strategy.GetFileExtension()}");
+
         }
 
     }

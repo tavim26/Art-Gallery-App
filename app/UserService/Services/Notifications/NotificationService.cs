@@ -1,4 +1,6 @@
-﻿namespace UserService.Services.Notifications
+﻿using UserService.Domain.Contracts;
+
+namespace UserService.Services.Notifications
 {
     public class NotificationService
     {

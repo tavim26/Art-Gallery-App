@@ -18,7 +18,7 @@
     },
     {
       "UpstreamHttpMethod": [ "Get" ],
-      "UpstreamPathTemplate": "/artworks/images/{artworkId}",
+      "UpstreamPathTemplate": "/artworkimages/{artworkId}",
       "DownstreamPathTemplate": "/api/ArtworkImages/{artworkId}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -42,8 +42,6 @@
       ],
       "Priority": 2
     },
-
-
     {
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "UpstreamPathTemplate": "/artists/{everything}",
@@ -59,7 +57,7 @@
     {
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamPathTemplate": "/artists/photo/{id}",
-      "DownstreamPathTemplate": "/api/artists/photo/{id}",
+      "DownstreamPathTemplate": "/api/Artists/photo/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -72,31 +70,6 @@
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "UpstreamPathTemplate": "/users/{everything}",
       "DownstreamPathTemplate": "/api/Users/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5128
-        }
-      ]
-    },
-    {
-      "UpstreamHttpMethod": [ "Put" ],
-      "UpstreamPathTemplate": "/users",
-      "DownstreamPathTemplate": "/api/Users",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5128
-        }
-      ]
-    },
-
-    {
-      "UpstreamHttpMethod": [ "Get", "Post" ],
-      "UpstreamPathTemplate": "/notification/{everything}",
-      "DownstreamPathTemplate": "/api/Notification/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
