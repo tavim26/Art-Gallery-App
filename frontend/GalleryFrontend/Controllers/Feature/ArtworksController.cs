@@ -1,9 +1,8 @@
 ﻿using GalleryFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Text.Json;
 using System.Text;
 using GalleryFrontend.ApiClients;
+using GalleryFrontend.Models.ViewModels;
 
 namespace GalleryFrontend.Controllers.Feature
 {

@@ -1,4 +1,4 @@
-﻿namespace GalleryFrontend.Models
+﻿namespace GalleryFrontend.Models.ViewModels
 {
     public class ArtworkStatsModel
     {

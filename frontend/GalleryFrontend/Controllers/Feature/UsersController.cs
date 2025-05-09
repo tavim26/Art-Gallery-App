@@ -1,7 +1,6 @@
 ﻿using GalleryFrontend.ApiClients;
 using GalleryFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace GalleryFrontend.Controllers.Feature
 {

@@ -39,3 +39,26 @@
 	}
 	</tbody>
 </table>
+@{
+	var userRole = Context.Session.GetString("UserRole");
+	string? dashboardAction = null;
+	string? dashboardController = null;
+
+	if (string.IsNullOrEmpty(userRole))
+	{
+		dashboardAction = "Index";
+		dashboardController = "Home"; 
+	}
+	else if (userRole == "Admin")
+	{
+		dashboardAction = "Index";
+		dashboardController = "Admin"; 
+	}
+}
+
+@if (dashboardAction != null && dashboardController != null)
+{
+	<div class="text-end mt-4">
+		<a class="btn btn-secondary" href="@Url.Action(dashboardAction, dashboardController)">Back to Dashboard</a>
+	</div>
+}

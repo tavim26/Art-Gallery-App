@@ -54,3 +54,13 @@
 	}
 	</tbody>
 </table>
+
+@{
+	var role = Context.Session.GetString("UserRole") ?? "";
+	string dashboardAction = role == "Manager" ? "Index" : "Index";
+	string dashboardController = role == "Manager" ? "Manager" : "Employee";
+}
+
+<div class="text-end mt-4">
+	<a class="btn btn-secondary" href="@Url.Action(dashboardAction, dashboardController)">Back to Dashboard</a>
+</div>

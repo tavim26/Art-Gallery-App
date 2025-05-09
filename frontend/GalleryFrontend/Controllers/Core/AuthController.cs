@@ -91,12 +91,13 @@ namespace GalleryFrontend.Controllers.Core
 
 
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
+
 
 
 

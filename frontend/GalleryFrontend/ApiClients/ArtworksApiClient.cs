@@ -1,7 +1,5 @@
-﻿// GalleryFrontend/Services/ArtworksApiClient.cs
-using GalleryFrontend.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
+﻿using GalleryFrontend.Models;
+using GalleryFrontend.Models.ViewModels;
 using System.Text;
 using System.Text.Json;
 
