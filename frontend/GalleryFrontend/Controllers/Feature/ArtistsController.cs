@@ -1,8 +1,8 @@
-﻿using GalleryFrontend.Models;
-using GalleryFrontend.Models.Services;
+﻿using GalleryFrontend.ApiClients;
+using GalleryFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.Feature
 {
     public class ArtistsController : Controller
     {
@@ -16,13 +16,13 @@ namespace GalleryFrontend.Controllers
         public async Task<IActionResult> VisitorIndex(string? name = null)
         {
             var artists = await _api.GetArtistsAsync(name);
-            return View("IndexVisitor", artists);
+            return View("Visitor/Index", artists);
         }
 
         public async Task<IActionResult> EmployeeIndex(string? name = null)
         {
             var artists = await _api.GetArtistsAsync(name);
-            return View("IndexEmployee", artists);
+            return View("Employee/Index", artists);
         }
 
         public async Task<IActionResult> ViewPhoto(int id)
@@ -31,7 +31,7 @@ namespace GalleryFrontend.Controllers
             if (photoBase64 == null)
                 return NotFound();
 
-            return View(model: photoBase64);
+            return View("Common/ViewPhoto",model: photoBase64);
         }
 
         [HttpGet]
@@ -40,7 +40,7 @@ namespace GalleryFrontend.Controllers
             var artist = await _api.GetArtistAsync(id);
             if (artist == null) return NotFound();
 
-            return View(artist);
+            return View("Employee/Edit",artist);
         }
 
         [HttpPost]
@@ -57,7 +57,7 @@ namespace GalleryFrontend.Controllers
             if (!success)
             {
                 ViewBag.Error = "Update failed.";
-                return View(model);
+                return View("Employee/Edit",model);
             }
 
             return RedirectToAction("EmployeeIndex");
@@ -67,7 +67,7 @@ namespace GalleryFrontend.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            return View(new ArtistModel());
+            return View("Employee/Add",new ArtistModel());
         }
 
         [HttpPost]
@@ -84,7 +84,7 @@ namespace GalleryFrontend.Controllers
             if (!success)
             {
                 ViewBag.Error = "Creation failed.";
-                return View(model);
+                return View("Employee/Add", model);
             }
 
             return RedirectToAction("EmployeeIndex");

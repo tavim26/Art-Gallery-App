@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using GalleryFrontend.Models;
 
-namespace GalleryFrontend.Models.Services
+namespace GalleryFrontend.ApiClients
 {
     public class SalesApiClient
     {

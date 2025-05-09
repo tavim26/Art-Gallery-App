@@ -1,9 +1,9 @@
-﻿using GalleryFrontend.Models;
-using GalleryFrontend.Models.Services;
+﻿using GalleryFrontend.ApiClients;
+using GalleryFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.Feature
 {
     public class UsersController : Controller
     {
@@ -21,7 +21,6 @@ namespace GalleryFrontend.Controllers
                 ? await _usersApi.GetAllUsersAsync()
                 : await _usersApi.FilterUsersByRoleAsync(role);
 
-            // ascundem adminii
             users = users.Where(u => u.Role != "Admin").ToList();
 
             ViewBag.SelectedRole = role;
@@ -34,7 +33,6 @@ namespace GalleryFrontend.Controllers
             var user = await _usersApi.GetUserAsync(id);
             if (user == null) return NotFound();
 
-            user.Password = ""; 
 
             return View(user);
         }

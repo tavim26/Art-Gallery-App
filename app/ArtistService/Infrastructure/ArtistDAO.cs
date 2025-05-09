@@ -11,6 +11,7 @@ namespace ArtistService.Infrastructure
 
         public ArtistDAO(DbContextOptions<ArtistDAO> options) : base(options) { }
 
+
         public List<Artist> GetArtists()
         {
             try
@@ -85,7 +86,8 @@ namespace ArtistService.Infrastructure
             try
             {
                 var artist = Artists.FirstOrDefault(a => a.Id == id);
-                if (artist == null) return false;
+                if (artist == null) 
+                    return false;
 
                 Artists.Remove(artist);
                 return SaveChanges() > 0;

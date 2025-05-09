@@ -43,6 +43,19 @@
       "Priority": 2
     },
     {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/artworks/images/{artworkId}",
+      "DownstreamPathTemplate": "/api/ArtworkImages/{artworkId}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5266
+        }
+      ],
+      "Priority": 3
+    },
+    {
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "UpstreamPathTemplate": "/artists/{everything}",
       "DownstreamPathTemplate": "/api/Artists/{everything}",

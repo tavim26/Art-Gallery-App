@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.Core
 {
     public class HomeController : Controller
     {

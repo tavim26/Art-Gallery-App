@@ -1,9 +1,8 @@
-﻿using GalleryFrontend.Models;
-using GalleryFrontend.Models.Services;
-using GalleryFrontend.Services;
+﻿using GalleryFrontend.ApiClients;
+using GalleryFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.Feature
 {
     public class SalesController : Controller
     {

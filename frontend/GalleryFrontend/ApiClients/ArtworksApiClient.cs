@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-namespace GalleryFrontend.Services
+namespace GalleryFrontend.ApiClients
 {
     public class ArtworksApiClient
     {

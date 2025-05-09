@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using GalleryFrontend.Models;
+using System.Text;
 using System.Text.Json;
 
-namespace GalleryFrontend.Models.Services
+namespace GalleryFrontend.ApiClients
 {
     public class ArtistApiClient
     {

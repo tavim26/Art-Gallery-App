@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.RoleBased
 {
-    public class EmployeeController : Controller
+    public class AdminController: Controller
     {
         public IActionResult Index()
         {

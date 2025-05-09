@@ -1,4 +1,4 @@
-using GalleryFrontend.Models.Services;
+using GalleryFrontend.ApiClients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +17,8 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddScoped<GalleryFrontend.Models.Services.ArtistApiClient>();
-builder.Services.AddScoped<GalleryFrontend.Services.ArtworksApiClient>();
+builder.Services.AddScoped<ArtistApiClient>();
+builder.Services.AddScoped<ArtworksApiClient>();
 builder.Services.AddScoped<SalesApiClient>();
 builder.Services.AddScoped<AuthApiClient>();
 builder.Services.AddHttpClient<UsersApiClient>();

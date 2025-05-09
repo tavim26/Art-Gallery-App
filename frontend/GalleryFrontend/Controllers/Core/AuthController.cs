@@ -3,9 +3,9 @@ using GalleryFrontend.Models;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using GalleryFrontend.Models.Services;
+using GalleryFrontend.ApiClients;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.Core
 {
     public class AuthController : Controller
     {
@@ -91,16 +91,12 @@ namespace GalleryFrontend.Controllers
 
 
 
-
-
         [HttpPost]
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
-
-
 
 
 

@@ -1,12 +1,11 @@
 ﻿using GalleryFrontend.Models;
-using GalleryFrontend.Models.Services;
-using GalleryFrontend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text;
+using GalleryFrontend.ApiClients;
 
-namespace GalleryFrontend.Controllers
+namespace GalleryFrontend.Controllers.Feature
 {
     public class ArtworksController : Controller
     {
@@ -33,7 +32,7 @@ namespace GalleryFrontend.Controllers
                 Artists = artists
             };
 
-            return View("IndexVisitor", model);
+            return View("Visitor/Index", model);
         }
 
         public async Task<IActionResult> EmployeeIndex(string title = null, string type = null, int? artistId = null)
@@ -50,7 +49,7 @@ namespace GalleryFrontend.Controllers
                 Artists = artists
             };
 
-            return View("IndexEmployee", model);
+            return View("Employee/Index", model);
         }
 
 
@@ -61,17 +60,17 @@ namespace GalleryFrontend.Controllers
             if (images == null || images.Count == 0)
             {
                 ViewBag.Error = "No images found for this artwork.";
-                return View(new List<string>());
+                return View("Common/ViewImages",new List<string>());
             }
 
-            return View(images);
+            return View("Common/ViewImages",images);
         }
 
         [HttpGet]
         public async Task<IActionResult> Add()
         {
             ViewBag.Artists = await _artistsApi.GetArtistsAsync();
-            return View(new ArtworkModel());
+            return View("Employee/Add", new ArtworkModel());
         }
 
         [HttpPost]
@@ -82,7 +81,7 @@ namespace GalleryFrontend.Controllers
             {
                 ViewBag.Error = "Creation failed.";
                 ViewBag.Artists = await _artistsApi.GetArtistsAsync();
-                return View(model);
+                return View("Employee/Add", model);
             }
 
             return RedirectToAction("EmployeeIndex");
@@ -95,7 +94,7 @@ namespace GalleryFrontend.Controllers
             if (model == null) return NotFound();
 
             ViewBag.Artists = await _artistsApi.GetArtistsAsync();
-            return View(model);
+            return View("Employee/Edit", model);
         }
 
         [HttpPost]
@@ -106,7 +105,7 @@ namespace GalleryFrontend.Controllers
             {
                 ViewBag.Error = "Update failed.";
                 ViewBag.Artists = await _artistsApi.GetArtistsAsync();
-                return View(model);
+                return View("Employee/Edit", model);
             }
 
             return RedirectToAction("EmployeeIndex");
@@ -133,7 +132,7 @@ namespace GalleryFrontend.Controllers
         public async Task<IActionResult> ExportJson()
         {
             var json = await _api.ExportJsonAsync();
-            return File(System.Text.Encoding.UTF8.GetBytes(json), "application/json", "artworks.json");
+            return File(Encoding.UTF8.GetBytes(json), "application/json", "artworks.json");
         }
 
 
@@ -149,7 +148,7 @@ namespace GalleryFrontend.Controllers
         [HttpGet]
         public IActionResult AddImage(int artworkId)
         {
-            return View(new ArtworkImageModel { ArtworkId = artworkId });
+            return View("Employee/AddImage", new ArtworkImageModel { ArtworkId = artworkId });
         }
 
         [HttpPost]
@@ -159,10 +158,10 @@ namespace GalleryFrontend.Controllers
             if (!success)
             {
                 ViewBag.Error = "Failed to add image.";
-                return View(model);
+                return View("Employee/AddImage",model);
             }
 
-            return RedirectToAction("ViewImages", new { artworkId = model.ArtworkId });
+            return RedirectToAction("EmployeeIndex", new { artworkId = model.ArtworkId });
         }
 
 
@@ -173,7 +172,6 @@ namespace GalleryFrontend.Controllers
             var byArtist = await _api.GetStatsByArtistAsync();
             var artists = await _artistsApi.GetArtistsAsync();
 
-            // Înlocuiește ID-urile cu numele artiștilor
             foreach (var item in byArtist)
             {
                 if (int.TryParse(item.Label.Replace("Artist ", ""), out int artistId))
@@ -184,7 +182,7 @@ namespace GalleryFrontend.Controllers
                 }
             }
 
-            return View((byType, byArtist));
+            return View("Manager/Stats",(byType, byArtist));
         }
 
 

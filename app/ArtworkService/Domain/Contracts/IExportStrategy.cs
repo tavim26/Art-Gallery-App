@@ -1,6 +1,6 @@
 ﻿using ArtworkService.Domain.DTO;
 
-namespace ArtworkService.Services.Exports
+namespace ArtworkService.Domain.Contracts
 {
     public interface IExportStrategy
     {

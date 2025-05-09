@@ -1,4 +1,5 @@
-﻿using ArtworkService.Domain.DTO;
+﻿using ArtworkService.Domain.Contracts;
+using ArtworkService.Domain.DTO;
 
 namespace ArtworkService.Services.Exports
 {

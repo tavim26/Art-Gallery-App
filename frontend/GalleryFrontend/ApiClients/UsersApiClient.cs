@@ -2,7 +2,7 @@
 using System.Text.Json;
 using GalleryFrontend.Models;
 
-namespace GalleryFrontend.Models.Services
+namespace GalleryFrontend.ApiClients
 {
     public class UsersApiClient
     {
@@ -59,11 +59,6 @@ namespace GalleryFrontend.Models.Services
 
             return res.IsSuccessStatusCode;
         }
-
-
-
-
-
 
         public async Task<bool> DeleteUserAsync(int id)
         {
