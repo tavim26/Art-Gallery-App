@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
+﻿
 namespace UserService.Domain.DTO
 {
     public class UserDTO

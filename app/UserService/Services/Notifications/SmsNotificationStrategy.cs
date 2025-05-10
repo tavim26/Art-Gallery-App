@@ -1,7 +1,6 @@
 ﻿using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-using Microsoft.Extensions.Configuration;
 using UserService.Domain.Contracts;
 
 namespace UserService.Services.Notifications

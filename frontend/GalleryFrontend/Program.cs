@@ -1,4 +1,4 @@
-using GalleryFrontend.ApiClients;
+using GalleryFrontend.Controllers.ApiClients;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GalleryFrontend.Models;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using GalleryFrontend.ApiClients;
+using GalleryFrontend.Controllers.ApiClients;
 
 namespace GalleryFrontend.Controllers.Core
 {

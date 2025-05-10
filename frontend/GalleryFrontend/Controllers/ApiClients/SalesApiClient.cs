@@ -2,7 +2,7 @@
 using System.Text.Json;
 using GalleryFrontend.Models;
 
-namespace GalleryFrontend.ApiClients
+namespace GalleryFrontend.Controllers.ApiClients
 {
     public class SalesApiClient
     {

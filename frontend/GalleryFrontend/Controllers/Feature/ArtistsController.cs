@@ -1,4 +1,4 @@
-﻿using GalleryFrontend.ApiClients;
+﻿using GalleryFrontend.Controllers.ApiClients;
 using GalleryFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
 

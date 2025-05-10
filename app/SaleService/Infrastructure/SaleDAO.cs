@@ -7,7 +7,6 @@ namespace SaleService.Infrastructure
 {
     public class SaleDAO : DbContext, ISaleDAO
     {
-        // EF Core va inițializa automat acest DbSet
         public DbSet<SaleEntity> Sales { get; set; }
 
         public SaleDAO(DbContextOptions<SaleDAO> options)
@@ -38,8 +37,7 @@ namespace SaleService.Infrastructure
             }
             catch (Exception ex)
             {
-                // Înlocuiește cu ILogger în varianta finală
-                Console.WriteLine($"Eroare la inserare vânzare: {ex.Message}");
+                Console.WriteLine($"Eroare la inserare vanzare: {ex.Message}");
                 return false;
             }
         }
@@ -55,7 +53,7 @@ namespace SaleService.Infrastructure
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Eroare la calcul total vânzări: {ex.Message}");
+                Console.WriteLine($"Eroare la calcul total: {ex.Message}");
                 return 0.0;
             }
         }

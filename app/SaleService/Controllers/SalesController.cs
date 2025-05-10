@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SaleService.Domain.Contracts;
 using SaleService.Domain.DTO;
 using SaleService.Domain.Mappers;
 using SaleService.Services;
-using SaleService.Services.Exports;
 
 namespace SaleService.Controllers
 {
@@ -59,16 +57,13 @@ namespace SaleService.Controllers
         [HttpGet("{id}/pdf")]
         public IActionResult ExportSalePdf(int id)
         {
-            var sale = _salesService.GetAllSales().FirstOrDefault(s => s.Id == id);
-            if (sale == null)
+            var result = _salesService.ExportSaleAsPdf(id);
+            if (result == null)
                 return NotFound("Sale not found.");
 
-            IExportStrategy strategy = new PdfExportStrategy(); 
-
-            var fileBytes = strategy.Export(sale);
-            return File(fileBytes, strategy.GetMimeType(), $"sale_{id}.{strategy.GetFileExtension()}");
-
+            return File(result.Value.fileBytes, result.Value.contentType, result.Value.fileName);
         }
+
 
     }
 }

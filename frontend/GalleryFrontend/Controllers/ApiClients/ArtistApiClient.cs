@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace GalleryFrontend.ApiClients
+namespace GalleryFrontend.Controllers.ApiClients
 {
     public class ArtistApiClient
     {

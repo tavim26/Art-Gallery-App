@@ -1,11 +1,9 @@
-﻿using ArtworkService.Domain;
-using ArtworkService.Domain.DTO;
+﻿using ArtworkService.Domain.DTO;
 using ArtworkService.Domain.Mappers;
 using ArtworkService.Services;
+
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using System.Text.Json;
-using System.Linq;
 
 namespace ArtworkService.Controllers
 {

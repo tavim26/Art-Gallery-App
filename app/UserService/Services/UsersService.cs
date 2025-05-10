@@ -1,7 +1,10 @@
 ﻿using System.Text;
 using UserService.Domain;
 using UserService.Domain.Contracts;
+using UserService.Domain.DTO;
+using UserService.Domain.Mappers;
 using UserService.Services.Exports;
+using UserService.Utils;
 
 namespace UserService.Services
 {
@@ -9,86 +12,66 @@ namespace UserService.Services
     {
         private readonly IUserDAO _userDAO;
 
-
         public UsersService(IUserDAO userDAO)
         {
-            this._userDAO = userDAO;
+            _userDAO = userDAO;
         }
 
-        public List<User> GetUsers()
+        public List<UserDTO> GetUserDTOs()
         {
-            return _userDAO.GetUsers();
+            return _userDAO.GetUsers().Select(UserMapper.ToDTO).ToList();
         }
 
-        public User? GetUserById(int id)
+        public UserDTO? GetUserDTO(int id)
         {
-            if (id <= 0)
-                return null;
-            return _userDAO.GetUserById(id);
+            var user = GetUserById(id);
+            return user == null ? null : UserMapper.ToDTO(user);
         }
 
-        public bool InsertUser(User user)
+        public (bool success, UserDTO? user, string? errorMessage) CreateUser(UserDTO dto)
         {
-            if (user == null || string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Role)
-                || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.PasswordHash))
-                return false;
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                return (false, null, "Email and password are required.");
 
-            var existing = _userDAO.GetUserByEmail(user.Email);
+            var existing = _userDAO.GetUserByEmail(dto.Email);
             if (existing != null)
-                return false;
+                return (false, null, "A user with this email already exists.");
 
-            return _userDAO.InsertUser(user);
+            var user = UserMapper.FromDTO(dto, HashHelper.HashPassword(dto.Password));
+            bool success = _userDAO.InsertUser(user);
+
+            return success
+                ? (true, UserMapper.ToDTO(user), null)
+                : (false, null, "Insert failed.");
         }
 
-
-        public bool UpdateUser(User user)
+        public (bool success, string? errorMessage) UpdateUser(UserDTO dto)
         {
-            if (user == null)
-                return false;
-            return _userDAO.UpdateUser(user);
+            var existing = _userDAO.GetUserById(dto.Id);
+            if (existing == null)
+                return (false, "User not found.");
+
+            var passwordHash = string.IsNullOrWhiteSpace(dto.Password)
+                ? existing.PasswordHash
+                : HashHelper.HashPassword(dto.Password);
+
+            var user = UserMapper.FromDTO(dto, passwordHash);
+            return _userDAO.UpdateUser(user)
+                ? (true, null)
+                : (false, "Update failed.");
         }
 
-        public bool DeleteUser(int id)
+        public bool DeleteUser(int id) => id > 0 && _userDAO.DeleteUser(id);
+
+        public List<UserDTO> FilterUsersByRoleDTO(string role)
         {
-            if (id <= 0)
-                return false;
-            return _userDAO.DeleteUser(id);
+            return _userDAO.FilterUsersByRole(role)
+                .Select(UserMapper.ToDTO).ToList();
         }
-
-        public List<User> FilterUsersByRole(string role)
-        {
-            if (string.IsNullOrEmpty(role))
-                return new List<User>();
-            return _userDAO.FilterUsersByRole(role);
-        }
-
-        public User? GetUserByEmail(string email)
-        {
-            if (string.IsNullOrEmpty(email))
-                return null;
-            return _userDAO.GetUserByEmail(email);
-        }
-
-        public (User? user, string error)? TryLogIn(string email, string passwordHash)
-        {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(passwordHash))
-                return (null, "Email and password are required.");
-
-            var existingUser = _userDAO.GetUserByEmail(email);
-            if (existingUser == null)
-                return (null, "No account found with this email.");
-
-            if (existingUser.PasswordHash != passwordHash)
-                return (null, "Incorrect password.");
-
-            return (existingUser, "");
-        }
-
-
 
         public (byte[] content, string contentType, string fileName) ExportUsersCsv()
         {
-            var users = GetUsers();
+            var users = _userDAO.GetUsers();
             var strategy = new CsvExportStrategy();
             var data = strategy.Export(users);
             var bytes = Encoding.UTF8.GetBytes(data);
@@ -97,6 +80,22 @@ namespace UserService.Services
             return (bytes, strategy.ContentType, filename);
         }
 
+        public (bool success, UserDTO? user, string? errorMessage) TryLogIn(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return (false, null, "Email and password are required.");
 
+            var existingUser = _userDAO.GetUserByEmail(email);
+            if (existingUser == null)
+                return (false, null, "No account found with this email.");
+
+            var passwordHash = HashHelper.HashPassword(password);
+            if (existingUser.PasswordHash != passwordHash)
+                return (false, null, "Incorrect password.");
+
+            return (true, UserMapper.ToDTO(existingUser), null);
+        }
+
+        private User? GetUserById(int id) => id <= 0 ? null : _userDAO.GetUserById(id);
     }
 }
