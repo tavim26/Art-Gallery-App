@@ -1,18 +1,14 @@
 ﻿using UserService.Domain.DTO;
-using UserService.Domain.Mappers;
-using UserService.Services.Notifications;
 
 namespace UserService.Services.Facade
 {
     public class UsersFacade
     {
         private readonly UsersService _usersService;
-        private readonly NotificationService _notificationService;
 
-        public UsersFacade(UsersService usersService, NotificationService notificationService)
+        public UsersFacade(UsersService usersService)
         {
             _usersService = usersService;
-            _notificationService = notificationService;
         }
 
         public IEnumerable<UserDTO> GetAll()
@@ -27,17 +23,8 @@ namespace UserService.Services.Facade
             return (success, errorMessage, user);
         }
 
-
         public (bool success, string? errorMessage) Update(UserDTO dto)
-        {
-            var result = _usersService.UpdateUser(dto);
-            if (result.success)
-            {
-                _notificationService.NotifyByEmail(dto.Email, "Your account details have been modified.");
-                _notificationService.NotifyBySms(dto.Phone, "Your account details have been modified.");
-            }
-            return result;
-        }
+            => _usersService.UpdateUser(dto); 
 
         public bool Delete(int id)
             => _usersService.DeleteUser(id);
@@ -53,6 +40,5 @@ namespace UserService.Services.Facade
             var (success, user, errorMessage) = _usersService.TryLogIn(email, password);
             return (success, errorMessage, user);
         }
-
     }
 }

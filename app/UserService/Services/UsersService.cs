@@ -4,6 +4,7 @@ using UserService.Domain.Contracts;
 using UserService.Domain.DTO;
 using UserService.Domain.Mappers;
 using UserService.Services.Exports;
+using UserService.Services.Observers;
 using UserService.Utils;
 
 namespace UserService.Services
@@ -11,11 +12,14 @@ namespace UserService.Services
     public class UsersService
     {
         private readonly IUserDAO _userDAO;
+        private readonly UserUpdateNotifier _notifier;
 
-        public UsersService(IUserDAO userDAO)
+        public UsersService(IUserDAO userDAO, UserUpdateNotifier notifier)
         {
             _userDAO = userDAO;
+            _notifier = notifier;
         }
+
 
         public List<UserDTO> GetUserDTOs()
         {
@@ -47,19 +51,31 @@ namespace UserService.Services
 
         public (bool success, string? errorMessage) UpdateUser(UserDTO dto)
         {
-            var existing = _userDAO.GetUserById(dto.Id);
-            if (existing == null)
+            var user = _userDAO.GetUserById(dto.Id);
+            if (user == null)
                 return (false, "User not found.");
 
-            var passwordHash = string.IsNullOrWhiteSpace(dto.Password)
-                ? existing.PasswordHash
-                : HashHelper.HashPassword(dto.Password);
+            user.Name = dto.Name;
+            user.Email = dto.Email;
+            user.Phone = dto.Phone;
+            user.Role = dto.Role;
 
-            var user = UserMapper.FromDTO(dto, passwordHash);
-            return _userDAO.UpdateUser(user)
-                ? (true, null)
-                : (false, "Update failed.");
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                var hashedPassword = HashHelper.HashPassword(dto.Password);
+                user.PasswordHash = hashedPassword;
+            }
+
+            var success = _userDAO.UpdateUser(user);
+            if (success)
+            {
+                _notifier.Notify(user);
+                return (true, null);
+            }
+
+            return (false, "Update failed.");
         }
+
 
         public bool DeleteUser(int id) => id > 0 && _userDAO.DeleteUser(id);
 

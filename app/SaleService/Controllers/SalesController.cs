@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SaleService.Domain.DTO;
-using SaleService.Domain.Mappers;
 using SaleService.Services;
 
 namespace SaleService.Controllers
