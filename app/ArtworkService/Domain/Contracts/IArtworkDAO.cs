@@ -4,7 +4,6 @@
     {
         List<Artwork> ListArtworks();
         Artwork? GetArtworkById(int id);
-        List<ArtworkImage> GetArtworkImages(int artworkId);
         bool InsertArtwork(Artwork artwork);
         bool UpdateArtwork(Artwork artwork);
         bool DeleteArtwork(int id);

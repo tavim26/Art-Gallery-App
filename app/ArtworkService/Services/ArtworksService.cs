@@ -114,7 +114,8 @@ namespace ArtworkService.Services
                 })
                 .ToList();
 
-            IExportStrategy? strategy = format?.ToLower() switch
+            // Alegerea strategiei 
+            IExportStrategy? baseStrategy = format?.ToLower() switch
             {
                 "csv" => new CsvExportStrategy(),
                 "json" => new JsonExportStrategy(),
@@ -122,8 +123,11 @@ namespace ArtworkService.Services
                 _ => null
             };
 
-            if (strategy == null)
+            if (baseStrategy == null)
                 return null;
+
+            // aplicare decorator
+            IExportStrategy strategy = new ExportWithHeaderDecorator(baseStrategy);
 
             var result = strategy.Export(artworks);
             var bytes = System.Text.Encoding.UTF8.GetBytes(result);
@@ -131,6 +135,7 @@ namespace ArtworkService.Services
 
             return (bytes, strategy.ContentType, fileName);
         }
+
 
 
 

@@ -2,6 +2,7 @@ using ArtistService.Infrastructure;
 using ArtistService.Services;
 using ArtistService.Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
+using ArtistService.Facade;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,8 @@ builder.Services.AddDbContext<ArtistDAO>(options =>
 // REGISTRARE DEPENDEN?E pentru serviciile artist
 builder.Services.AddScoped<IArtistDAO, ArtistDAO>();
 builder.Services.AddScoped<ArtistsService>();
+builder.Services.AddScoped<ArtistsFacade>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -13,6 +13,7 @@ builder.Services.AddDbContext<SaleDAO>(options =>
 // ?? Înregistrare servicii necesare
 builder.Services.AddScoped<ISaleDAO, SaleDAO>();
 builder.Services.AddScoped<SalesService>();
+builder.Services.AddScoped<SalesFacade>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

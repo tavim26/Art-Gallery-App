@@ -2,6 +2,7 @@
 using SaleService.Domain.Contracts;
 using SaleService.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using SaleService.Infrastructure.Factories;
 
 namespace SaleService.Infrastructure
 {
@@ -32,7 +33,7 @@ namespace SaleService.Infrastructure
                 return false;
             try
             {
-                Sales.Add(new SaleEntity(sale));
+                Sales.Add(SaleEntityFactory.Create(sale));
                 return SaveChanges() > 0;
             }
             catch (Exception ex)

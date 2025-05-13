@@ -1,6 +1,7 @@
 ﻿using ArtistService.Domain;
 using ArtistService.Domain.Contracts;
 using ArtistService.Infrastructure.Entities;
+using ArtistService.Infrastructure.Factories;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtistService.Infrastructure
@@ -45,7 +46,7 @@ namespace ArtistService.Infrastructure
 
             try
             {
-                Artists.Add(new ArtistEntity(artist));
+                Artists.Add(ArtistEntityFactory.Create(artist));
                 return SaveChanges() > 0;
             }
             catch (Exception ex)
