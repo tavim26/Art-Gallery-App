@@ -2,11 +2,11 @@
 
 namespace GalleryFrontend.Controllers.RoleBased
 {
-    public class VisitorController : Controller
+    public class VisitorController : BaseRoleController
     {
-        public IActionResult Index()
+        protected override object PrepareModel()
         {
-            return View();
+            return new { Role = "Visitor", Message = "Welcome, Visitor!" };
         }
     }
 }

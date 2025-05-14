@@ -2,11 +2,11 @@
 
 namespace GalleryFrontend.Controllers.RoleBased
 {
-    public class EmployeeController : Controller
+    public class EmployeeController : BaseRoleController
     {
-        public IActionResult Index()
+        protected override object PrepareModel()
         {
-            return View();
+            return new { Role = "Employee", Message = "Welcome, Employee!" };
         }
     }
 }

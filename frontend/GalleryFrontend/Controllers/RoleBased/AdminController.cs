@@ -2,11 +2,11 @@
 
 namespace GalleryFrontend.Controllers.RoleBased
 {
-    public class AdminController: Controller
+    public class AdminController : BaseRoleController
     {
-        public IActionResult Index()
+        protected override object PrepareModel()
         {
-            return View();
+            return new { Role = "Admin", Message = "Welcome, Admin!" };
         }
     }
 }
