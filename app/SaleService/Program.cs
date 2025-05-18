@@ -5,12 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddDbContext<SaleDAO>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// ?? Înregistrare servicii necesare
 builder.Services.AddScoped<ISaleDAO, SaleDAO>();
 builder.Services.AddScoped<SalesService>();
 builder.Services.AddScoped<SalesFacade>();
@@ -21,7 +19,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

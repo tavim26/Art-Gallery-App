@@ -8,7 +8,6 @@ namespace ArtworkService.Infrastructure
     public class ArtworkDAO : DbContext, IArtworkDAO
     {
         private DbSet<ArtworkEntity> Artworks => Set<ArtworkEntity>();
-        private DbSet<ArtworkImageEntity> ArtworkImages => Set<ArtworkImageEntity>();
 
         public ArtworkDAO(DbContextOptions<ArtworkDAO> options) : base(options) { }
 
@@ -168,20 +167,6 @@ namespace ArtworkService.Infrastructure
             }
         }
 
-        public List<ArtworkImage> GetArtworkImages(int artworkId)
-        {
-            try
-            {
-                return ArtworkImages
-                    .Where(img => img.ArtworkId == artworkId)
-                    .Select(img => img.ToArtworkImage())
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[InsertArtwork] Error getting artwork images: {ex.Message}");
-                return new List<ArtworkImage>();
-            }
-        }
+   
     }
 }

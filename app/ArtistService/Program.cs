@@ -6,12 +6,10 @@ using ArtistService.Facade;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// === Add services to the container ===
 builder.Services.AddDbContext<ArtistDAO>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// REGISTRARE DEPENDEN?E pentru serviciile artist
 builder.Services.AddScoped<IArtistDAO, ArtistDAO>();
 builder.Services.AddScoped<ArtistsService>();
 builder.Services.AddScoped<ArtistsFacade>();
@@ -23,7 +21,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// === Configure the HTTP request pipeline ===
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -85,7 +85,6 @@ namespace UserService.Infrastructure
                 if (existingEntity == null)
                     return false;
 
-                // Actualizează doar câmpurile necesare
                 existingEntity.Name = user.Name;
                 existingEntity.Email = user.Email;
                 existingEntity.Phone = user.Phone;
