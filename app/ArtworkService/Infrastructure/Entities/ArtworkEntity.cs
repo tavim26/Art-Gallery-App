@@ -32,7 +32,7 @@ namespace ArtworkService.Infrastructure.Entities
 
         [Column("Price")]
         [Required]
-        public double Price { get; set; } // <- adăugat
+        public double Price { get; set; } 
 
         public ArtworkEntity()
         {
