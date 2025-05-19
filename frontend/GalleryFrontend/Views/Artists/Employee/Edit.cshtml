@@ -1,64 +1,65 @@
 ﻿@model GalleryFrontend.Models.ArtistModel
 
 @{
-	ViewData["Title"] = "Edit Artist";
+    ViewData["Title"] = "Edit Artist";
 }
 
-<h2 class="text-center mt-3">Edit Artist</h2>
+<div class="form-container">
+    <div class="form-card">
+        <h2 class="text-center mt-3">Edit Artist</h2>
 
-@if (ViewBag.Error != null)
-{
-	<div class="alert alert-danger">@ViewBag.Error</div>
-}
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
 
-<form asp-action="Edit" method="post" class="mt-4">
-	<input type="hidden" asp-for="Id" />
+        <form asp-action="Edit" method="post" class="mt-4">
+            <input type="hidden" asp-for="Id" />
 
-	<div class="mb-3">
-		<label class="form-label">Name</label>
-		<input asp-for="Name" class="form-control" required />
-	</div>
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" required />
+            </div>
 
-	<div class="mb-3">
-		<label class="form-label">Birth Date</label>
-		<input asp-for="BirthDate" class="form-control" type="date" />
-	</div>
+            <div class="mb-3">
+                <label class="form-label">Birth Date</label>
+                <input asp-for="BirthDate" class="form-control" type="date" />
+            </div>
 
-	<div class="mb-3">
-		<label class="form-label">Birthplace</label>
-		<input asp-for="Birthplace" class="form-control" />
-	</div>
+            <div class="mb-3">
+                <label class="form-label">Birthplace</label>
+                <input asp-for="Birthplace" class="form-control" />
+            </div>
 
-	<div class="mb-3">
-		<label class="form-label">Nationality</label>
-		<input asp-for="Nationality" class="form-control" />
-	</div>
+            <div class="mb-3">
+                <label class="form-label">Nationality</label>
+                <input asp-for="Nationality" class="form-control" />
+            </div>
 
-	<div class="mb-3">
-		<label class="form-label">Upload Photo (optional)</label>
-		<input type="file" id="photoFile" class="form-control" accept="image/*" />
-	</div>
+            <div class="mb-3">
+                <label class="form-label">Upload Photo (optional)</label>
+                <input type="file" id="photoFile" class="form-control" accept="image/*" />
+            </div>
 
-	<input type="hidden" asp-for="Photo" id="photoBase64" />
+            <input type="hidden" asp-for="Photo" id="photoBase64" />
 
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-action="EmployeeIndex" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
 
-	<button type="submit" class="btn btn-primary">Update</button>
-	<a asp-action="EmployeeIndex" class="btn btn-secondary ms-2">Cancel</a>
-</form>
-
-	
 @section Scripts {
-	<script>
-    document.getElementById("photoFile").addEventListener("change", function () {
-        const file = this.files[0];
-        if (!file) return;
+    <script>
+        document.getElementById("photoFile").addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            
-            document.getElementById("photoBase64").value = e.target.result.split(",")[1];
-        };
-        reader.readAsDataURL(file);
-    });
-</script>
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("photoBase64").value = e.target.result.split(",")[1];
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
 }

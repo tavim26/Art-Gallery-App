@@ -4,25 +4,29 @@
 	ViewData["Title"] = "Add Image to Artwork";
 }
 
-<h2 class="text-center mt-3">Add Image to Artwork</h2>
+<div class="form-container">
+	<div class="form-card">
+		<h2 class="text-center mt-3">Add Image to Artwork</h2>
 
-@if (ViewBag.Error != null)
-{
-	<div class="alert alert-danger">@ViewBag.Error</div>
-}
+		@if (ViewBag.Error != null)
+		{
+			<div class="alert alert-danger">@ViewBag.Error</div>
+		}
 
-<form asp-action="AddImage" method="post" class="mt-4">
-	<input type="hidden" asp-for="ArtworkId" />
-	<input type="hidden" asp-for="ImageUrl" id="imageBase64" />
+		<form asp-action="AddImage" method="post" class="mt-4">
+			<input type="hidden" asp-for="ArtworkId" />
+			<input type="hidden" asp-for="ImageUrl" id="imageBase64" />
 
-	<div class="mb-3">
-		<label class="form-label">Upload Image (JPG/PNG)</label>
-		<input type="file" id="imageFile" class="form-control" accept="image/png,image/jpeg" required />
+			<div class="mb-3">
+				<label class="form-label">Upload Image (JPG/PNG)</label>
+				<input type="file" id="imageFile" class="form-control" accept="image/png,image/jpeg" required />
+			</div>
+
+			<button type="submit" class="btn btn-success">Add</button>
+			<a asp-action="EmployeeIndex" class="btn btn-secondary ms-2">Cancel</a>
+		</form>
 	</div>
-
-	<button type="submit" class="btn btn-success">Add</button>
-	<a asp-action="EmployeeIndex" class="btn btn-secondary ms-2">Cancel</a>
-</form>
+</div>
 
 @section Scripts {
 	<script>
@@ -32,7 +36,6 @@
 
             const reader = new FileReader();
             reader.onload = function (e) {
-              
                 const base64 = e.target.result.split(",")[1];
                 document.getElementById("imageBase64").value = base64;
             };

@@ -2,12 +2,15 @@
 	ViewData["Title"] = "Home Page";
 }
 
-<h1>Welcome to the Art Gallery!</h1>
+<div class="home-container">
+	<h1>Welcome to the Art Gallery!</h1>
 
-<div class="text-center">
-	<p>Choose how you want to continue:</p>
-    
-	<a class="btn btn-primary m-2" href="/Auth/Register">Sign Up</a>
-	<a class="btn btn-success m-2" href="/Auth/Login">Log In</a>
-	<a class="btn btn-secondary m-2" href="/Visitor/Index">Continue as Visitor</a>
+	<div class="text-center">
+		<p>Choose how you want to continue:</p>
+		<div class="button-group">
+			<a class="btn btn-signup" href="/Auth/Register">Sign Up</a>
+			<a class="btn btn-login" href="/Auth/Login">Log In</a>
+			<a class="btn btn-visitor" href="/Visitor/Index">Continue as Visitor</a>
+		</div>
+	</div>
 </div>

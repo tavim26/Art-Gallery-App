@@ -1,59 +1,61 @@
 ﻿@model (List<ArtworkStatsModel> ByType, List<ArtworkStatsModel> ByArtist)
 
 @{
-	ViewData["Title"] = "Artwork Statistics";
+    ViewData["Title"] = "Artwork Statistics";
 }
 
-<h2 class="text-center">Artwork Statistics</h2>
+<div class="stats-container">
+    <h2 class="text-center">Artwork Statistics</h2>
 
-<div class="d-flex flex-column align-items-center">
-	<canvas id="typeChart" style="max-width: 500px; height: 300px;"></canvas>
-	<canvas id="artistChart" style="max-width: 700px; height: 350px;" class="mt-5"></canvas>
+    <div class="chart-container">
+        <canvas id="typeChart" style="max-width: 500px; height: 300px;"></canvas>
+        <canvas id="artistChart" style="max-width: 700px; height: 350px;" class="mt-5"></canvas>
+    </div>
+
+    @{
+        var role = Context.Session.GetString("UserRole") ?? "";
+        string dashboardAction = role == "Manager" ? "Index" : "Index";
+        string dashboardController = role == "Manager" ? "Manager" : "Employee";
+    }
+
+    <div class="text-end mt-4">
+        <a class="btn btn-secondary" href="@Url.Action(dashboardAction, dashboardController)">Back to Dashboard</a>
+    </div>
 </div>
 
 @section Scripts {
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script>
-		const typeLabels = @Html.Raw(Json.Serialize(Model.ByType.Select(x => x.Label)));
-		const typeData = @Html.Raw(Json.Serialize(Model.ByType.Select(x => x.Count)));
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const typeLabels = @Html.Raw(Json.Serialize(Model.ByType.Select(x => x.Label)));
+        const typeData = @Html.Raw(Json.Serialize(Model.ByType.Select(x => x.Count)));
 
-		const artistLabels = @Html.Raw(Json.Serialize(Model.ByArtist.Select(x => x.Label)));
-		const artistData = @Html.Raw(Json.Serialize(Model.ByArtist.Select(x => x.Count)));
+        const artistLabels = @Html.Raw(Json.Serialize(Model.ByArtist.Select(x => x.Label)));
+        const artistData = @Html.Raw(Json.Serialize(Model.ByArtist.Select(x => x.Count)));
 
-		new Chart(document.getElementById("typeChart"), {
-			type: "pie",
-			data: {
-				labels: typeLabels,
-				datasets: [{
-					data: typeData,
-					backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-				}]
-			}
-		});
+        new Chart(document.getElementById("typeChart"), {
+            type: "pie",
+            data: {
+                labels: typeLabels,
+                datasets: [{
+                    data: typeData,
+                    backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                }]
+            }
+        });
 
-		new Chart(document.getElementById("artistChart"), {
-			type: "bar",
-			data: {
-				labels: artistLabels,
-				datasets: [{
-					label: "Number of Artworks",
-					data: artistData,
-					backgroundColor: "#4BC0C0"
-				}]
-			},
-			options: {
-				indexAxis: 'x'
-			}
-		});
-	</script>
+        new Chart(document.getElementById("artistChart"), {
+            type: "bar",
+            data: {
+                labels: artistLabels,
+                datasets: [{
+                    label: "Number of Artworks",
+                    data: artistData,
+                    backgroundColor: "#4BC0C0"
+                }]
+            },
+            options: {
+                indexAxis: 'x'
+            }
+        });
+    </script>
 }
-
-@{
-	var role = Context.Session.GetString("UserRole") ?? "";
-	string dashboardAction = role == "Manager" ? "Index" : "Index";
-	string dashboardController = role == "Manager" ? "Manager" : "Employee";
-}
-
-<div class="text-end mt-4">
-	<a class="btn btn-secondary" href="@Url.Action(dashboardAction, dashboardController)">Back to Dashboard</a>
-</div>
