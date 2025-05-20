@@ -5,9 +5,11 @@
     margin: 0;
     width: 100vw;
     overflow-x: hidden;
+    color: #1e3a8a;
+    opacity: 1;
+    visibility: visible;
 }
 
-    /* Selecție text clară în container */
     .gallery-container ::selection {
         background: #cce4ff;
         color: #000;

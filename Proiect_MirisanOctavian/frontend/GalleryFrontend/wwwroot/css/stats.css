@@ -1,0 +1,123 @@
+﻿.stats-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e3a8a, #2d3748);
+    padding: 20px;
+    margin: 0;
+    width: 100vw;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    animation: fadeInDown 1s ease-out;
+}
+
+.chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 750px;
+    margin-bottom: 20px;
+    animation: slideIn 0.8s ease-out;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+.text-end.mt-4 {
+    margin-top: 20px;
+    text-align: right;
+    width: 100%;
+    max-width: 750px;
+}
+
+
+.btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    min-width: 100px;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-secondary {
+    background: #6b7280;
+    border: none;
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(107, 114, 128, 0.4);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .stats-container {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    .chart-container {
+        padding: 15px;
+        max-width: 100%;
+    }
+
+    canvas {
+        height: 250px !important;
+    }
+
+    .btn {
+        padding: 10px;
+        min-width: 100px;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.form-card, .auth-card {
+    color: initial;
+}

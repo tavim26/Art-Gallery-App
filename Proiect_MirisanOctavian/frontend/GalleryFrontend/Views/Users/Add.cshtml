@@ -1,0 +1,50 @@
+﻿@model GalleryFrontend.Models.UserModel
+
+@{
+	ViewData["Title"] = "Add User";
+}
+
+<div class="form-container">
+	<div class="form-card">
+		<h2 class="text-center mt-3">Add New User</h2>
+
+		@if (ViewBag.Error != null)
+		{
+			<div class="alert alert-danger">@ViewBag.Error</div>
+		}
+
+		<form asp-action="Add" method="post" class="mt-4">
+			<div class="mb-3">
+				<label class="form-label">Name</label>
+				<input asp-for="Name" class="form-control" required />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Role</label>
+				<select asp-for="Role" class="form-select" required>
+					<option value="">-- Select Role --</option>
+					<option value="Employee">Employee</option>
+					<option value="Manager">Manager</option>
+				</select>
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Email</label>
+				<input asp-for="Email" class="form-control" type="email" required />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Password</label>
+				<input asp-for="Password" class="form-control" type="password" required />
+			</div>
+
+			<div class="mb-3">
+				<label class="form-label">Phone</label>
+				<input asp-for="Phone" class="form-control" />
+			</div>
+
+			<button type="submit" class="btn btn-success">Save</button>
+			<a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+		</form>
+	</div>
+</div>

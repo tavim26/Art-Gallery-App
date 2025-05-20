@@ -1,0 +1,13 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+}
+.form-card, .auth-card {
+    color: #1e3a8a;
+}
