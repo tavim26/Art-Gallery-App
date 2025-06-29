@@ -1,23 +1,32 @@
-# Ignore Visual Studio files
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio
 .vs/
 *.user
 *.suo
-*.cache
+
+# ASP.NET secrets
+appsettings*.json
+!appsettings.example.json
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
 *.log
 
-# Ignore bin and obj folders
-bin/
-obj/
+# OS-specific
+.DS_Store
+Thumbs.db
 
-# Ignore build artifacts
-*.dll
-*.exe
-*.pdb
+# Publish folder
+publish/
 
-# Ignore database artifacts
-*.mdf
-*.ldf
-
-# Ignore configuration artifacts
-*.userosscache
-*.sln.docstates
+# Frontend builds (e.g., React/Angular)
+dist/
+build/
